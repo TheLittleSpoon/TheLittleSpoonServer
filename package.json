@@ -1,0 +1,19 @@
+{
+  "name": "thelittlespoonserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheLittleSpoon/TheLittleSpoonServer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheLittleSpoon/TheLittleSpoonServer/issues"
+  },
+  "homepage": "https://github.com/TheLittleSpoon/TheLittleSpoonServer#readme"
+}
