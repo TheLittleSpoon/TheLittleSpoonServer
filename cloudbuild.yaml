@@ -21,7 +21,7 @@ steps:
 # Access the id_github file from Secret Manager
 - name: gcr.io/cloud-builders/gcloud
   entrypoint: 'bash'
-  args: [ '-c', 'gcloud secrets versions access latest --secret=github > /root/.ssh/id_github' ]
+  args: [ '-c', 'gcloud secrets versions access latest --secret=github2 > /root/.ssh/id_github' ]
   volumes:
   - name: 'ssh'
     path: /root/.ssh
@@ -68,7 +68,7 @@ steps:
   - '-c'
   - |
      sed "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/g" kubernetes.yaml.tpl | \
-     sed "s/COMMIT_SHA/${SHORT_SHA}/g" > environment/backend/backend-deploy.yaml
+     sed "s/COMMIT_SHA/${SHORT_SHA}/g" > environment/spoon-backend/spoon-backend-deploy.yaml
 
 # This step pushes the manifest back to hello-cloudbuild-env
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -79,7 +79,7 @@ steps:
   - |
     set -x && \
     cd environment && \
-    git add backend/backend-deploy.yaml && \
+    git add spoon-backend/spoon-backend-deploy.yaml && \
     git commit -m "Deploying image gcr.io/${PROJECT_ID}/spoon-be:${SHORT_SHA}
     Built from commit ${COMMIT_SHA} of repository TheLittleSpoonServer
     Author: $(git log --format='%an <%ae>' -n 1 HEAD)" && \
