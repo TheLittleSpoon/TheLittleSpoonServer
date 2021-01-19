@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/TheLittleSpoon/TheLittleSpoonServer/issues"
   },
-  "homepage": "https://github.com/TheLittleSpoon/TheLittleSpoonServer#readme"
+  "homepage": "https://github.com/TheLittleSpoon/TheLittleSpoonServer#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^3.1.0"
+  }
 }
