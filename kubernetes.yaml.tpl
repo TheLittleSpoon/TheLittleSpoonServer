@@ -23,7 +23,7 @@ spec:
       - image: gcr.io/GOOGLE_CLOUD_PROJECT/spoon-be:COMMIT_SHA
         name: projector-be
         ports:
-        - containerPort: 5000
+        - containerPort: 8000
           protocol: TCP
         resources:
           requests:

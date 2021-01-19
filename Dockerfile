@@ -36,5 +36,5 @@ COPY --from=dependencies /root/chat/prod_node_modules ./node_modules
 # copy app sources
 COPY . .
 # expose port and define CMD
-EXPOSE 5000
+EXPOSE 8000
 CMD npm run dev
