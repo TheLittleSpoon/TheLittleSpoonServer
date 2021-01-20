@@ -17,8 +17,8 @@ ingredientSchema = new mongoose.Schema({
     },
     measuringUnit: {
         type: String,
-        required: true,
-        enum: ['g', 'Kg', 'ml', 'L']
+        enum: ['g', 'Kg', 'ml', 'L'],
+        required: true
     }
 });
 
@@ -26,10 +26,10 @@ ingredientSchema = new mongoose.Schema({
 const recipeSchema = new mongoose.Schema({
     name: { 
         type: String, 
-        required: true,
         maxlength: 255,
         lowercase: true,
-        trim: true
+        trim: true,
+        required: true
     },
     author: { type: String, default: "Gordon Ramsay"},
     ingredients: { 
@@ -38,13 +38,13 @@ const recipeSchema = new mongoose.Schema({
     },
     instructions: { 
         type: String, 
-        required: true,
         validate: {
             validator: function(text) {
                 return text && text.length > 20;
             },
             message: 'A recipe instructions should have at least 20 letters on its description.'
-        }
+        },
+        required: true
     }
 });
 
