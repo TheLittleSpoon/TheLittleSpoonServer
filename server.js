@@ -12,7 +12,7 @@ const recipeRouter = require('./routes/recipe');
 
 // Config variables
 const port = config.get('port');
-const appName = config.get('name');
+const appName = config.get('name'); 
 const mongoServer = config.get('mongo-server');
 const dbName = config.get('db-name');
 const mongoUser = config.get('mongo-user');
@@ -32,7 +32,4 @@ mongoose.connect(`mongodb://${mongoUser}:${mongoPassword}@${mongoServer}/${dbNam
     .then(() => dbDubug('Connected to MongoDB successfuly'))
     .catch(err => dbDubug('Could not connect to MongoDB: ', err));
 
-app.listen(port, () => {
-    console.log(`Listening on ${port}...`);
-    startupDebug(`${appName} started on port ${port}`);
-});
+app.listen(port, () => startupDebug(`${appName} started on port ${port}`));

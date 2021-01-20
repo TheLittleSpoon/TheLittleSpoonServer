@@ -41,13 +41,7 @@ const Recipe = mongoose.model('Recipe', new mongoose.Schema({
         required: true
     },
     instructions: { 
-        type: String, 
-        validate: {
-            validator: function(text) {
-                return text && text.length > 20;
-            },
-            message: 'A recipe instructions should have at least 20 letters on its description.'
-        },
+        type: [ String ], 
         required: true
     }
 }));
@@ -56,7 +50,6 @@ function validateRecipe(recipe) {
     const schema = {
         name: Joi.string().required(),
         author: Joi.string().required(),
-        instructions: Joi.string().required()
     };
 
     return Joi.validate(recipe, schema);
