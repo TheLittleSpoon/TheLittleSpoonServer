@@ -1,5 +1,27 @@
 const mongoose = require('mongoose'); 
 
+ingredientSchema = new mongoose.Schema({
+    name: { 
+        type: String, 
+        required: true 
+    },
+    quantity: { 
+        type: Number,
+        validate: {
+            validator: function(quantity) {
+                return quantity && quantity > 0;
+            },
+            message: 'Quantity must be larger than 0.'
+        },
+        required: true
+    },
+    measuringUnit: {
+        type: String,
+        required: true,
+        enum: ['g', 'Kg', 'ml', 'L']
+    }
+});
+
 // Recipe schema
 const recipeSchema = new mongoose.Schema({
     name: { 
@@ -11,24 +33,7 @@ const recipeSchema = new mongoose.Schema({
     },
     author: { type: String, default: "Gordon Ramsay"},
     ingredients: { 
-        type:[ {
-            name: { type: String, required: true },
-            quantity: { 
-                type: Number,
-                validate: {
-                    validator: function(quantity) {
-                        return quantity && quantity > 0;
-                    },
-                    message: 'Quantity must be larger than 0.'
-                },
-                required: true
-            },
-            measuringUnit: {
-                type: String,
-                equired: true,
-                enum: ['g', 'Kg', 'ml', 'L']
-            }
-        } ], 
+        type:[ ingredientSchema ], 
         required: true
     },
     instructions: { 
