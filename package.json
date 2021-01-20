@@ -1,15 +1,16 @@
 {
-  "name": "thelittlespoonserver",
+  "name": "TheLittleSpoonServer",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TheLittleSpoon/TheLittleSpoonServer.git"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -17,7 +18,10 @@
   },
   "homepage": "https://github.com/TheLittleSpoon/TheLittleSpoonServer#readme",
   "dependencies": {
+    "config": "^3.3.3",
+    "debug": "^4.3.1",
     "express": "^4.17.1",
-    "socket.io": "^3.1.0"
+    "mongoose": "^5.11.12",
+    "morgan": "^1.10.0"
   }
 }
