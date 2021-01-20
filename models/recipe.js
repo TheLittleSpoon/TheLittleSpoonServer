@@ -9,21 +9,36 @@ const recipeSchema = new mongoose.Schema({
         lowercase: true,
         trim: true
     },
-    category: {
-        type: String,
-        required: true,
-        enum: ['Burgers', 'Asian', 'Italian']
-    },
     author: { type: String, default: "Gordon Ramsay"},
-    ingredients: { type:[ String ], required: true},
-    description: { 
+    ingredients: { 
+        type:[ {
+            name: { type: String, required: true },
+            quantity: { 
+                type: Number,
+                validate: {
+                    validator: function(quantity) {
+                        return quantity && quantity > 0;
+                    },
+                    message: 'Quantity must be larger than 0.'
+                },
+                required: true
+            },
+            measuringUnit: {
+                type: String,
+                equired: true,
+                enum: ['g', 'Kg', 'ml', 'L']
+            }
+        } ], 
+        required: true
+    },
+    instructions: { 
         type: String, 
         required: true,
         validate: {
             validator: function(text) {
                 return text && text.length > 20;
             },
-            message: 'A recipe should have at least 20 letters on its description.'
+            message: 'A recipe instructions should have at least 20 letters on its description.'
         }
     }
 });
