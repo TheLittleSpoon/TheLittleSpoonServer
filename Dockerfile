@@ -4,7 +4,7 @@ FROM alpine:3.5 AS base
 # install node
 RUN apk add --no-cache nodejs-current tini
 # set working directory
-WORKDIR /root/chat
+WORKDIR /root/
 # Set tini as entrypoint
 ENTRYPOINT ["/sbin/tini", "--"]
 # copy project file
@@ -32,9 +32,9 @@ COPY . .
 # ---- Release ----
 FROM base AS release
 # copy production node_modules
-COPY --from=dependencies /root/chat/prod_node_modules ./node_modules
+COPY --from=dependencies /root/prod_node_modules ./node_modules
 # copy app sources
 COPY . .
 # expose port and define CMD
 EXPOSE 3000
-CMD node server.js
+CMD node src/server.js
