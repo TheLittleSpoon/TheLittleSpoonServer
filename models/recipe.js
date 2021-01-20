@@ -1,4 +1,5 @@
 const mongoose = require('mongoose'); 
+const Joi = require('joi');
 
 ingredientSchema = new mongoose.Schema({
     name: { 
@@ -22,8 +23,8 @@ ingredientSchema = new mongoose.Schema({
     }
 });
 
-// Recipe schema
-const recipeSchema = new mongoose.Schema({
+// Recipe model + schema
+const Recipe = mongoose.model('Recipe', new mongoose.Schema({
     name: { 
         type: String, 
         maxlength: 255,
@@ -31,7 +32,10 @@ const recipeSchema = new mongoose.Schema({
         trim: true,
         required: true
     },
-    author: { type: String, default: "Gordon Ramsay"},
+    author: { 
+        type: String, 
+        required: true
+    },
     ingredients: { 
         type:[ ingredientSchema ], 
         required: true
@@ -46,10 +50,17 @@ const recipeSchema = new mongoose.Schema({
         },
         required: true
     }
-});
+}));
 
-// Recipe model
-const Recipe = mongoose.model('Recipe', recipeSchema);
+function validateRecipe(recipe) {
+    const schema = {
+        name: Joi.string().required(),
+        author: Joi.string().required(),
+        instructions: Joi.string().required()
+    };
+
+    return Joi.validate(recipe, schema);
+}
 
 // Not finished - only games
 async function createRecipe() {
