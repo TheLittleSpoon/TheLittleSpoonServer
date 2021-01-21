@@ -47,12 +47,12 @@ const Recipe = mongoose.model('Recipe', new mongoose.Schema({
 }));
 
 function validateRecipe(recipe) {
-    const schema = {
+    const schema = Joi.object({
         name: Joi.string().required(),
         author: Joi.string().required(),
-    };
+    });
 
-    return Joi.validate(recipe, schema);
+    return schema.validate(recipe);
 }
 
 // Not finished - only games

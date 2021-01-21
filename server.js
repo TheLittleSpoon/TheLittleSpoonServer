@@ -11,6 +11,7 @@ const mongoose = require('mongoose');
 const homeRouter = require('./routes/home');
 const recipeRouter = require('./routes/recipes');
 const userRouter = require('./routes/users');
+const authRouter = require('./routes/auth');
 
 // Config variables
 const port = config.get('port');
@@ -20,6 +21,11 @@ const dbName = config.get('db-name');
 const mongoUser = config.get('mongo-user');
 const mongoPassword = config.get('mongo-pass');
 
+if (!config.get('jwtPrivateKey')) {
+    startupDebug('FATAL ERROR: jwtPrivateKey is not defined.' );
+    process.exit(1);
+}
+
 const app = express();
 app
     .use(express.json())
@@ -28,7 +34,8 @@ app
     .use(morgan('tiny'))
     .use('/', homeRouter)
     .use('/api/recipes', recipeRouter)
-    .use('/api/users', userRouter);
+    .use('/api/users', userRouter)
+    .use('/api/auth', authRouter);
 
 // Coonnect to mongodb
 mongoose.connect(`mongodb://${mongoUser}:${mongoPassword}@${mongoServer}/${dbName}`, { useNewUrlParser: true, useUnifiedTopology: true })
