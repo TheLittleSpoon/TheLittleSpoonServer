@@ -1,6 +1,7 @@
 const mongoose = require('mongoose'); 
 const Joi = require('joi');
 
+// This is an hepler schema to make the Recipe scheme more readable.
 ingredientSchema = new mongoose.Schema({
     name: { 
         type: String, 
@@ -33,7 +34,8 @@ const Recipe = mongoose.model('Recipe', new mongoose.Schema({
         required: true
     },
     author: { 
-        type: String, 
+        type: String,
+        maxlength: 255, 
         required: true
     },
     ingredients: { 
@@ -46,10 +48,16 @@ const Recipe = mongoose.model('Recipe', new mongoose.Schema({
     }
 }));
 
+// Recipe validation.
 function validateRecipe(recipe) {
     const schema = Joi.object({
-        name: Joi.string().required(),
-        author: Joi.string().required(),
+        name: Joi.string().min(2).max(255).required(),
+        author: Joi.string().min(2).max(255).required(),
+        ingredients: [ {
+            name: Joi.string().min(2).max(255).required(),
+            quantity: Joi.number().required(),
+            measuringUnit: Joi.string().required()
+        }]
     });
 
     return schema.validate(recipe);
@@ -71,7 +79,6 @@ async function createRecipe() {
         for (field in e.errors)
             dbDubug('Error: ', e.errors[field].message);
     }
-    
 }
 
 // Not finished - only games
