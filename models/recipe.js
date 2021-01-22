@@ -52,52 +52,21 @@ const Recipe = mongoose.model('Recipe', new mongoose.Schema({
 function validateRecipe(recipe) {
     const schema = Joi.object({
         name: Joi.string().min(2).max(255).required(),
+        // Author is not needed because no api uses it
         // author: Joi.string().min(2).max(255).required(),
-        // ingredients: [{
-        //     name: Joi.string().min(2).max(255).required(),
-        //     quantity: Joi.number().required(),
-        //     measuringUnit: Joi.string().required()
-        // }]
-        ingredients: Joi.required(),
-        instructions: Joi.required()
+        ingredients: Joi.array().items(
+            Joi.object({
+                name: Joi.string().min(2).max(255).required(),
+                quantity: Joi.number().required(),
+                measuringUnit: Joi.string().required()
+            })
+        ).required(),
+        instructions: Joi.array().items(Joi.string().required()).required()
     });
 
     return schema.validate(recipe);
 }
 
-// Not finished - only games
-async function createRecipe() {
-    const recipe = new Recipe({
-        // name: 'Cake',
-        ingredients: ['chocholate', 'eggs'],
-        description: 'Make a cake'
-    });
-    
-    try {
-        const result = await recipe.save();
-        console.log(result);    
-    } 
-    catch (e) {
-        for (field in e.errors)
-            dbDubug('Error: ', e.errors[field].message);
-    }
-}
-
-// Not finished - only games
-async function getRecipes() {
-    const recipes = await Recipe
-        .find()
-        .or([ {author: 'Gordon Ramsay'}, {name: /^Cake/}])
-        .and([ {name: "Cake"}])
-        .limit(1)
-        .sort({ name: 1 })
-        .select({ name: 1, ingredients: 1 })
-        .countDocuments();
-    console.log(recipes);
-};
-
 // Exports
 module.exports.Recipe = Recipe;
 module.exports.validate = validateRecipe;
-module.exports.getRecipes = getRecipes;
-module.exports.createRecipe = createRecipe;
