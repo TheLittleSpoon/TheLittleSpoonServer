@@ -11,7 +11,7 @@ const mongoPassword = config.get('mongo-pass');
 const logger = winston.createLogger({
     transports: [
         new winston.transports.File({ 
-            filename: 'spoon.log'
+            filename: 'logs/spoon.log'
         })
         // new winston.transports.MongoDB({ 
         //     db: `mongodb://${mongoUser}:${mongoPassword}@${mongoServer}/${dbName}`, 
@@ -19,14 +19,14 @@ const logger = winston.createLogger({
         // })
     ],
     exceptionHandlers: [
-        new winston.transports.File({ filename: 'exceptions.log' }),
+        new winston.transports.File({ filename: 'logs/exceptions.log' }),
         new winston.transports.Console({
             colorize: true,
             prettyPrint: true
         })
     ],
     rejectionHandlers: [
-        new winston.transports.File({ filename: 'rejections.log' })
+        new winston.transports.File({ filename: 'logs/rejections.log' })
     ]
 });
 
