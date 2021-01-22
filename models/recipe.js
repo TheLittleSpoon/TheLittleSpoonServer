@@ -39,7 +39,7 @@ const Recipe = mongoose.model('Recipe', new mongoose.Schema({
         required: true
     },
     ingredients: { 
-        type:[ ingredientSchema ], 
+        type: [ ingredientSchema ], 
         required: true
     },
     instructions: { 
@@ -52,12 +52,14 @@ const Recipe = mongoose.model('Recipe', new mongoose.Schema({
 function validateRecipe(recipe) {
     const schema = Joi.object({
         name: Joi.string().min(2).max(255).required(),
-        author: Joi.string().min(2).max(255).required(),
-        ingredients: [ {
-            name: Joi.string().min(2).max(255).required(),
-            quantity: Joi.number().required(),
-            measuringUnit: Joi.string().required()
-        }]
+        // author: Joi.string().min(2).max(255).required(),
+        // ingredients: [{
+        //     name: Joi.string().min(2).max(255).required(),
+        //     quantity: Joi.number().required(),
+        //     measuringUnit: Joi.string().required()
+        // }]
+        ingredients: Joi.required(),
+        instructions: Joi.required()
     });
 
     return schema.validate(recipe);
@@ -96,5 +98,6 @@ async function getRecipes() {
 
 // Exports
 module.exports.Recipe = Recipe;
+module.exports.validate = validateRecipe;
 module.exports.getRecipes = getRecipes;
 module.exports.createRecipe = createRecipe;
