@@ -35,10 +35,10 @@ router.post('/', auth, async (req, res) => {
 // Delete a recipe
 // Only an admin - Maybe the owner ?
 router.delete('/', [ auth, admin ], async (req, res) => {
-    const { error } = validate(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+    recipeId = _.pick(req.body, ['_id']);
+    if (!recipeId) return res.status(400).send('Got no recipe ID to delete.');
 
-    let recipe = await Recipe.findOne({ _id: req.body._id });
+    let recipe = await Recipe.findOne({ _id: recipeId });
     if (!recipe) return res.status(400).send('Recipe does not exist.');
 
     await Recipe.deleteOne({ _id: req.body._id });
