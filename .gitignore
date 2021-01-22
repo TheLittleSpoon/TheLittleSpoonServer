@@ -1,3 +1,10 @@
+# App related:
+# Logs:
+spoon.log
+exceptions.log
+rejections.log
+
+
 # Logs
 logs
 *.log
