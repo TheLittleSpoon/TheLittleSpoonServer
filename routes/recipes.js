@@ -23,13 +23,14 @@ router.post('/', auth, async (req, res) => {
 
     recipe = new Recipe(_.pick(req.body, ['name', 'ingredients', 'instructions']));
 
-    // Get the user's name:
+    // Get the user from the database (we need his name):
     const author = await User.findById(req.user._id).select('name');
+    //if(!author) return res.status(400).send('Author does not exist.');
     // recipe.author = author.name; // Gets the name of the author withour ID
     recipe.author = author;
 
     await recipe.save();
-    res.send(_.pick(recipe, ['_id', 'name', 'author', 'ingredients', 'instructions']));
+    res.status(200).send(_.pick(recipe, ['_id', 'name', 'author', 'ingredients', 'instructions']));
 })
 
 // Delete a recipe

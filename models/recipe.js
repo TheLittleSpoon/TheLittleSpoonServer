@@ -27,7 +27,8 @@ ingredientSchema = new mongoose.Schema({
 // Recipe model + schema
 const Recipe = mongoose.model('Recipe', new mongoose.Schema({
     name: { 
-        type: String, 
+        type: String,
+        minlength: 2,
         maxlength: 255,
         lowercase: true,
         trim: true,
@@ -35,6 +36,7 @@ const Recipe = mongoose.model('Recipe', new mongoose.Schema({
     },
     author: { 
         type: String,
+        minlength: 2,
         maxlength: 255, 
         required: true
     },

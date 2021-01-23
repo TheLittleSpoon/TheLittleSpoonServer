@@ -5,6 +5,7 @@ const app = express();
 const config = require('config');
 const logger = require('./startup/logging');
 const startupDebug = require('debug')('app:startup');
+const socketDebug = require('debug')('app:socket');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
@@ -14,6 +15,7 @@ require('./startup/validation')();
 require('./startup/config')();
 require('./startup/db')();
 require('./startup/routes')(app);
+require('./startup/prod')(app);
 
 // Config variables
 const port = config.get('port');
@@ -23,15 +25,15 @@ const appName = config.get('name');
 // const wsServer = new ws({
 //   httpServer: server
 // })
-//
+
 io.on('connection', (socket) => {
-    console.log('a user connected.');
+    socketDebug('a user connected.');
     // broadcast - because we only want to inform the other users
     // about the new connection and not the user that connected!
     socket.broadcast.emit('joined', '');
 
     socket.on('disconnect', () => {
-        console.log('a user disconnected.');
+        socketDebug('a user disconnected.');
         socket.broadcast.emit('disconnected', '');
     });
 
@@ -40,7 +42,9 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(port, () => {
+const mainServer = server.listen(port, () => {
     startupDebug(`${appName} started on port ${port}`);
     logger.info(`${appName} started on port ${port}`);
 });
+
+module.exports = mainServer;

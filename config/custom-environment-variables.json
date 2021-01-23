@@ -1,3 +1,4 @@
 {
-    "jwtPrivateKey": "spoon_jwtPrivateKey"
+    "jwtPrivateKey": "spoon_jwtPrivateKey",
+    "mongo-pass": "mongo_pass"
 }
