@@ -1,7 +1,7 @@
 {
     "name": "The Little Spoon",
     "port": 3000,
-    "mongo-server": "35.202.204.143",
+    "mongo-server": "35.232.153.194",
     "db-name": "admin",
     "mongo-user": "spoon"
 }
