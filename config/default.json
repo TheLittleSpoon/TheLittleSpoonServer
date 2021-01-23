@@ -3,7 +3,5 @@
     "port": 3000,
     "mongo-server": "35.202.204.143",
     "db-name": "admin",
-    "mongo-user": "spoon",
-    "mongo-pass": "sp00n",
-    "jwtPrivateKey": "spoon_jwtPrivateKey"
+    "mongo-user": "spoon"
 }

@@ -15,6 +15,7 @@ require('./startup/validation')();
 require('./startup/config')();
 require('./startup/db')();
 require('./startup/routes')(app);
+require('./startup/prod')(app);
 
 // Config variables
 const port = config.get('port');
@@ -24,7 +25,7 @@ const appName = config.get('name');
 // const wsServer = new ws({
 //   httpServer: server
 // })
-//
+
 io.on('connection', (socket) => {
     socketDebug('a user connected.');
     // broadcast - because we only want to inform the other users

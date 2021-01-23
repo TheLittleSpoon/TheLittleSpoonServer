@@ -15,5 +15,9 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+# Secrets - shhhhh
+ENV spoon_jwtPrivateKey="passw0rd"
+ENV mongo_pass="sp00n"
+
 EXPOSE 3000
 CMD [ "node", "server.js" ]
