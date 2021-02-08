@@ -17,15 +17,15 @@ const logger = winston.createLogger({
         //     colorize: true,
         //     prettyPrint: true
         // }),
-        new winston.transports.MongoDB({ 
-            db: `mongodb://${mongoUser}:${mongoPassword}@${mongoServer}/${dbName}`, 
+        new winston.transports.MongoDB({
+            db: `mongodb://${mongoUser}:${mongoPassword}@${mongoServer}/${dbName}`,
             options: { useNewUrlParser: true, useUnifiedTopology: true }
         })
     ],
     exceptionHandlers: [
         // new winston.transports.File({ filename: 'logs/exceptions.log' }),
-        new winston.transports.MongoDB({ 
-            db: `mongodb://${mongoUser}:${mongoPassword}@${mongoServer}/${dbName}`, 
+        new winston.transports.MongoDB({
+            db: `mongodb://${mongoUser}:${mongoPassword}@${mongoServer}/${dbName}`,
             options: { useNewUrlParser: true, useUnifiedTopology: true }
         }),
         new winston.transports.Console({
@@ -35,8 +35,8 @@ const logger = winston.createLogger({
     ],
     rejectionHandlers: [
         // new winston.transports.File({ filename: 'logs/rejections.log' }),
-        new winston.transports.MongoDB({ 
-            db: `mongodb://${mongoUser}:${mongoPassword}@${mongoServer}/${dbName}`, 
+        new winston.transports.MongoDB({
+            db: `mongodb://${mongoUser}:${mongoPassword}@${mongoServer}/${dbName}`,
             options: { useNewUrlParser: true, useUnifiedTopology: true }
         }),
         new winston.transports.Console({
