@@ -44,11 +44,6 @@ require("./startup/prod")(app);
 const port = config.get("port");
 const appName = config.get("name");
 
-app.route('/recipes/create-recipe').post((req, res) => {
-  console.log('in serverrrrrr');
-  // res.send(201, req.body)
-})
-
 io.on("connection", (socket) => {
   socketDebug("a user connected.");
   // broadcast - because we only want to inform the other users

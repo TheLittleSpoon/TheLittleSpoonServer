@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 
 // Post a new recipe
 // Every authenticated user can post a recipe
-router.post('/', auth, async (req, res) => {
+router.post('/create', auth, async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
@@ -35,7 +35,7 @@ router.post('/', auth, async (req, res) => {
 
 // Delete a recipe
 // Only an admin - Maybe the owner ?
-router.delete('/', [ auth, admin ], async (req, res) => {
+router.delete('/', [auth, admin], async (req, res) => {
     recipeId = _.pick(req.body, ['_id']);
     if (!recipeId) return res.status(400).send('Got no recipe ID to delete.');
 
