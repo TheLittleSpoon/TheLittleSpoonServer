@@ -13,10 +13,10 @@ const logger = winston.createLogger({
         // new winston.transports.File({ 
         //     filename: 'logs/spoon.log'
         // }),
-        // new winston.transports.Console({
-        //     colorize: true,
-        //     prettyPrint: true
-        // }),
+        new winston.transports.Console({
+            colorize: true,
+            prettyPrint: true
+        }),
         new winston.transports.MongoDB({
             db: `mongodb://${mongoUser}:${mongoPassword}@${mongoServer}/${dbName}`,
             options: { useNewUrlParser: true, useUnifiedTopology: true }
