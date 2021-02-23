@@ -21,7 +21,7 @@ router.post('/create', auth, async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    recipe = new Recipe(_.pick(req.body, ['name', 'ingredients', 'instructions']));
+    recipe = new Recipe(_.pick(req.body, ['name', 'ingredients', 'instructions', 'image']));
 
     // Get the user from the database (we need his name):
     const author = await User.findById(req.user._id).select('name');
@@ -30,7 +30,7 @@ router.post('/create', auth, async (req, res) => {
     recipe.author = author;
 
     await recipe.save();
-    res.status(200).send(_.pick(recipe, ['_id', 'name', 'author', 'ingredients', 'instructions']));
+    res.status(200).send(_.pick(recipe, ['_id', 'name', 'author', 'ingredients', 'instructions', 'image']));
 })
 
 // Delete a recipe
