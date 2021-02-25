@@ -35,7 +35,7 @@ router.post('/create', auth, async (req, res) => {
 
 // Delete a recipe
 // Only an admin - Maybe the owner ?
-router.delete('/', [auth, admin], async (req, res) => {
+router.delete('/', auth, async (req, res) => {
     recipeId = _.pick(req.body, ['_id']);
     if (!recipeId) return res.status(400).send('Got no recipe ID to delete.');
 

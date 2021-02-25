@@ -53,8 +53,9 @@ const Recipe = mongoose.model(
       required: true,
     },
     image: { 
-        data: Buffer,
-        contentType: String 
+        // data: Buffer,
+        // contentType: String 
+        type: String
     },
   })
 );
@@ -74,7 +75,8 @@ function validateRecipe(recipe) {
         })
       )
       .required(),
-    instructions: Joi.array().items(Joi.string().required()).required()
+    instructions: Joi.array().items(Joi.string().required()).required(),
+    image: Joi.string()
     // Can't validate image currently
     // image: Joi.image().required()
   });
