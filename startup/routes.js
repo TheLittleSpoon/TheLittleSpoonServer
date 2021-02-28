@@ -7,6 +7,7 @@ const error = require('../middleware/error');
 // Routers
 const homeRouter = require('../routes/home');
 const recipeRouter = require('../routes/recipes');
+const categoryRouter = require('../routes/categories');
 const userRouter = require('../routes/users');
 const authRouter = require('../routes/auth');
 
@@ -18,6 +19,7 @@ module.exports = function(app) {
         .use(morgan('tiny'))
         .use('/', homeRouter)
         .use('/api/recipes', recipeRouter)
+        .use('/api/categories', categoryRouter)
         .use('/api/users', userRouter)
         .use('/api/auth', authRouter)
         // Error middleware has to be last.
