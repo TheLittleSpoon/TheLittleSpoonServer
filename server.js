@@ -30,7 +30,12 @@ const config = require("config");
 const logger = require("./startup/logging");
 const startupDebug = require("debug")("app:startup");
 const socketDebug = require("debug")("app:socket");
-const io = require("socket.io")(server);
+const io = require("socket.io")(server,  {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "OPTIONS"]
+  }
+});
 
 // Startup folder loading.
 require("./startup/logging");
