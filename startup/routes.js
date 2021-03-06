@@ -10,6 +10,7 @@ const recipeRouter = require('../routes/recipes');
 const categoryRouter = require('../routes/categories');
 const userRouter = require('../routes/users');
 const authRouter = require('../routes/auth');
+const tastyScrapperRouter = require('../routes/scraping-tasty');
 
 module.exports = function(app) {
     app
@@ -22,6 +23,7 @@ module.exports = function(app) {
         .use('/api/categories', categoryRouter)
         .use('/api/users', userRouter)
         .use('/api/auth', authRouter)
+        .use('/api/tasty', tastyScrapperRouter)
         // Error middleware has to be last.
         .use(error);
 }
