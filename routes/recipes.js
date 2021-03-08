@@ -34,13 +34,19 @@ router.post('/create', auth, async (req, res) => {
 })
 
 // Delete a recipe
-// Only an admin - Maybe the owner ?
+// Only the owner
 router.delete('/', auth, async (req, res) => {
     recipeId = _.pick(req.body, ['_id']);
     if (!recipeId) return res.status(400).send('Got no recipe ID to delete.');
 
     let recipe = await Recipe.findOne({ _id: recipeId });
     if (!recipe) return res.status(400).send('Recipe does not exist.');
+
+    // If this isn't this user's recipe, return denied.
+    // let author = recipe;
+    // console.log("user id: " + req.user._id);
+    // console.log("recipe id: " + (author));
+    // if ((req.user._id) != (recipe.author._id)) return res.status(403).send('Access denied.');
 
     await Recipe.deleteOne({ _id: req.body._id });
     res.send(recipe)
