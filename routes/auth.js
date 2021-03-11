@@ -17,12 +17,14 @@ router.post('/', async (req, res) => {
     if (!user) return res.status(400).send('Invalid email or password.');
 
     // If the password is not valid return error 400.
-    const validPassword = await bcrypt.compare(req.body.password, user.password);
+    const validPassword = await Object.is(req.body.password, user.password);
     if (!validPassword) return res.status(400).send('Invalid email or password.');
 
     // Generate a JWT Token and send it back to the user session.
     const token = user.generateAuthToken();
-    res.send(token);
+    res.json({
+        token
+    });
 });
 
 // Validate an auth user request.

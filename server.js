@@ -49,15 +49,34 @@ require("./startup/prod")(app);
 const port = config.get("port");
 const appName = config.get("name");
 
+
+
+
 io.on("connection", (socket) => {
   socketDebug("a user connected.");
+  let users = [];
+  for (let [id, socket] of io.of("/").sockets) {
+    users.push({
+      userID: id,
+      username: socket.username,
+    });
+  }
+
   // broadcast - because we only want to inform the other users
   // about the new connection and not the user that connected!
-  socket.broadcast.emit("joined", "");
+  socket.broadcast.emit("joined", users);
 
   socket.on("disconnect", () => {
     socketDebug("a user disconnected.");
-    socket.broadcast.emit("disconnected", "");
+    let users = [];
+    for (let [id, socket] of io.of("/").sockets) {
+      users.push({
+        userID: id,
+        username: socket.username,
+      });
+    }
+
+    socket.broadcast.emit("disconnectedUser", users);
   });
 
   socket.on("new message", (msg) => {
