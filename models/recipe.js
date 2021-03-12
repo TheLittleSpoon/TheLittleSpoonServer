@@ -53,7 +53,7 @@ const Recipe = mongoose.model(
       required: true,
     },
     categories: {
-      type: [mongoose.Schema.Types.ObjectId],
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
     }
   })
@@ -74,9 +74,9 @@ function validateRecipe(recipe) {
         })
       )
       .required(),
-    instructions: Joi.array().items(Joi.string().required()).required(),
+    instructions: Joi.array().items(Joi.string()).required(),
     image: Joi.string().required(),
-    categories: Joi.required()
+    categories: Joi.objectId().required()
   });
 
   return schema.validate(recipe);
