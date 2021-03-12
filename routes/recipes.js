@@ -59,17 +59,14 @@ router.put('/', auth, async (req, res) => {
 
 // Delete a recipe
 // Only the owner
-router.delete('/', auth, async (req, res) => {
-    recipeId = _.pick(req.body, ['_id']);
-    if (!recipeId) return res.status(400).send('Got no recipe ID to delete.');
-
-    let recipe = await Recipe.findOne({ _id: recipeId });
+router.delete('/:id', auth, async (req, res) => {
+    let recipe = await Recipe.findOne({ _id: req.params.id });
     if (!recipe) return res.status(400).send('Recipe does not exist.');
 
     // If this isn't this user's recipe, return denied.
     if (recipe.author != req.user._id) return res.status(403).send('No access to this resource.');
 
-    await Recipe.deleteOne({ _id: recipeId });
+    await Recipe.deleteOne({ _id: req.params.id });
     res.send(recipe);
 });
 
