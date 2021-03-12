@@ -41,4 +41,40 @@ router.post('/', async (req, res) => {
         .send(_.pick(user, ['_id', 'name', 'email']));
 });
 
+// Update user
+// only owner
+router.put('/', auth, async (req, res) => {
+    userId = _.pick(req.body, ['_id']);
+    if (!userId) return res.status(400).send('Got no user ID to update.');
+
+    let user = await User.findOne({ _id: userId });
+    if (!user) return res.status(400).send('User does not exist.');
+
+    let { name, password } = _.pick(req.body, ['name', 'password']);
+    const salt = await bcrypt.genSalt(10);
+    const finalPass = await bcrypt.hash(password, salt);
+
+    await User.updateOne({ _id: userId }, { 
+        name: name,
+        password: finalPass
+    }, { omitUndefined: true });
+
+    user = await User.findOne({ _id: userId });
+
+    res.status(200).send(_.pick(user, ['_id', 'name', 'email']));
+});
+
+// Delete a category
+// Only an admin can delete a user
+router.delete('/', [auth, admin], async (req, res) => {
+    userId = _.pick(req.body, ['_id']);
+    if (!userId) return res.status(400).send('Got no user ID to delete.');
+
+    let user = await User.findOne({ _id: userId });
+    if (!user) return res.status(400).send('User does not exist.');
+
+    await User.deleteOne({ _id: req.body._id });
+    res.send(user)
+});
+
 module.exports = router;
