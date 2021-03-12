@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 
 // Create a new category
 // Every admin can do it.
-router.post('/create', [auth, admin], async (req, res) => {
+router.post('/', [auth, admin], async (req, res) => {
     const { error } = validate(req.body);
     console.log(req.body);
 

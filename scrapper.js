@@ -9,7 +9,7 @@ const { Category, validate } = require('./models/category');
 // password: tastypassword
 
 const server = "35.224.144.255"
-const tag = "5_ingredients_or_less";
+const tag = "under_30_minutes";
 const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDRiYzYyMzVkODZhNWI3MjE4YjU3Y2QiLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE2MTU1Nzk5OTV9.1AdL-vvlCcNW-rviR3smc2s6F25iTbdIMYGikJd3kt0";
 
 function createRecipes(tag) {
@@ -82,3 +82,4 @@ function masterScrapper() {
 
 // createCategories();
 createRecipes(tag);
+// mongoose.connection.close();
