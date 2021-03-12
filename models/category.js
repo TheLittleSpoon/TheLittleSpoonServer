@@ -13,6 +13,10 @@ const Category = mongoose.model(
       trim: true,
       required: true,
     },
+    imageUrl: {
+      type: String,
+      required: true,
+    },
   })
 );
 
