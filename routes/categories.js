@@ -49,14 +49,11 @@ router.put('/', [auth, admin], async (req, res) => {
 
 // Delete a category
 // Only an admin can delete a category
-router.delete('/', [auth, admin], async (req, res) => {
-    categoryId = _.pick(req.body, ['_id']);
-    if (!categoryId) return res.status(400).send('Got no category ID to delete.');
-
-    let category = await Category.findOne({ _id: categoryId });
+router.delete('/:id', [auth, admin], async (req, res) => {
+    let category = await Category.findOne({ _id: req.params.id });
     if (!category) return res.status(400).send('Category does not exist.');
 
-    await Category.deleteOne({ _id: req.body._id });
+    await Category.deleteOne({ _id: req.params.id });
     res.send(category)
 });
 
