@@ -19,8 +19,6 @@ router.get('/', async (req, res) => {
 // Every admin can do it.
 router.post('/', [auth, admin], async (req, res) => {
     const { error } = validate(req.body);
-    console.log(req.body);
-
     if (error) return res.status(400).send(error.details[0].message);
 
     category = new Category(_.pick(req.body, 'name', 'imageUrl'));

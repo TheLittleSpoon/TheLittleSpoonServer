@@ -58,10 +58,11 @@ function createCategories() {
             tagsReq.headers({
                 "x-auth-token": token
             });
-            tagsReq.send({
-                "name": element.name
+            tagsReq.type('json').send({
+                "name": element,
+                "imageUrl": "imageurl"
             });
-            console.log(element.name);
+            // console.log(element);
             tagsReq.end(function (tagsRes) {
                 if (tagsRes.error) throw new Error(tagsRes.error);
             });
@@ -80,6 +81,6 @@ function masterScrapper() {
     });
 }
 
-// createCategories();
-createRecipes(tag);
+createCategories();
+// createRecipes(tag);
 // mongoose.connection.close();
