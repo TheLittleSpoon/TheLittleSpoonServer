@@ -30,6 +30,33 @@ router.post('/create', auth, async (req, res) => {
     res.status(200).send(_.pick(recipe, ['_id', 'name', 'author', 'ingredients', 'instructions', 'image', 'categories']));
 })
 
+// Update recipe
+// only owner
+router.put('/', auth, async (req, res) => {
+    recipeId = _.pick(req.body, ['_id']);
+    if (!recipeId) return res.status(400).send('Got no recipe ID to update.');
+
+    let recipe = await Recipe.findOne({ _id: recipeId });
+    if (!recipe) return res.status(400).send('Recipe does not exist.');
+
+    // If this isn't this user's recipe, return denied.
+    if (recipe.author != req.user._id) return res.status(403).send('No access to this resource.');
+
+    let { name, ingredients, instructions, image, categories } = _.pick(req.body, ['name', 'ingredients', 'instructions', 'image', 'categories']);
+
+    await Recipe.updateOne({ _id: recipeId }, {
+        name: name,
+        ingredients: ingredients,
+        instructions: instructions,
+        image: image,
+        categories: categories
+    }, { omitUndefined: true });
+
+    recipe = await Recipe.findOne({ _id: recipeId });
+
+    res.status(200).send(_.pick(recipe, ['_id', 'name', 'ingredients', 'instructions', 'image', 'categories']));
+});
+
 // Delete a recipe
 // Only the owner
 router.delete('/', auth, async (req, res) => {
