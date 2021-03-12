@@ -1,7 +1,4 @@
 const mongoose = require("mongoose");
-// const ImageExtension = require('joi-image-extension');
-// const Joi = require('joi').extend(ImageExtension);
-const { Category } = require('../models/category');
 const Joi = require('joi');
 
 // This is an hepler schema to make the Recipe scheme more readable.
@@ -40,15 +37,12 @@ const Recipe = mongoose.model(
       required: true,
     },
     author: {
-      type: String,
-      minlength: 2,
-      maxlength: 255,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
     image: { 
-      // data: Buffer,
-      // contentType: String 
-      type: String
+      type: String,
+      required: true
     },
     ingredients: {
       type: [ingredientSchema],
@@ -59,7 +53,7 @@ const Recipe = mongoose.model(
       required: true,
     },
     categories: {
-      type: [Category.schema],
+      type: [mongoose.Schema.Types.ObjectId],
       required: true,
     }
   })
@@ -70,7 +64,7 @@ function validateRecipe(recipe) {
   const schema = Joi.object({
     name: Joi.string().min(2).max(255).required(),
     // Author is not needed because no api uses it
-    // author: Joi.string().min(2).max(255).required(),
+    // author: Joi.required(),
     ingredients: Joi.array()
       .items(
         Joi.object({
@@ -81,10 +75,8 @@ function validateRecipe(recipe) {
       )
       .required(),
     instructions: Joi.array().items(Joi.string().required()).required(),
-    image: Joi.string(),
-    categories: Joi.required(),
-    // Can't validate image currently
-    // image: Joi.image().required()
+    image: Joi.string().required(),
+    categories: Joi.required()
   });
 
   return schema.validate(recipe);
