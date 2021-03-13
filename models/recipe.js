@@ -51,7 +51,7 @@ const Recipe = mongoose.model(
       type: String,
       required: true,
     },
-    categoryId: {
+    categories: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     }
@@ -75,7 +75,7 @@ function validateRecipe(recipe) {
       .required(),
     instructions: Joi.string(),
     imageUrl: Joi.string().required(),
-    categoryId: Joi.objectId().required()
+    categories: Joi.objectId().required()
   });
 
   return schema.validate(recipe);

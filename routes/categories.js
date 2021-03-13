@@ -30,17 +30,17 @@ router.post('/', [auth, admin], async (req, res) => {
 // Update category
 // only admin
 router.put('/', [auth, admin], async (req, res) => {
-    categoryId = _.pick(req.body, ['_id']);
-    if (!categoryId) return res.status(400).send('Got no category ID to update.');
+    categories = _.pick(req.body, ['_id']);
+    if (!categories) return res.status(400).send('Got no category ID to update.');
 
-    let category = await Category.findOne({ _id: categoryId });
+    let category = await Category.findOne({ _id: categories });
     if (!category) return res.status(400).send('Category does not exist.');
 
     let { name } = _.pick(req.body, ['name', 'imageUrl']);
 
-    await Category.updateOne({ _id: categoryId }, { name: name }, { omitUndefined: true });
+    await Category.updateOne({ _id: categories }, { name: name }, { omitUndefined: true });
 
-    category = await Category.findOne({ _id: categoryId });
+    category = await Category.findOne({ _id: categories });
 
     res.status(200).send(_.pick(category, ['_id', 'name', 'imageUrl']));
 });

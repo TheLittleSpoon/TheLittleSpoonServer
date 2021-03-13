@@ -55,8 +55,8 @@ router.get('/recipes/tags/:tag', async (req, res) => {
         spoonRecipes.push({
             name: element.name,
             author: "tasty",
-            imageUrl: element.thumbnail_url,
-            categoryId: req.params.tag,
+            image: element.thumbnail_url,
+            categories: req.params.tag,
             instructions: element.instructions
         });
     });
