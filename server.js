@@ -56,6 +56,7 @@ io.on("connection", (socket) => {
 
   socket.on("login", (data) => {
     let address = socket.handshake.headers.origin
+    console.log(address)
     if (validOrigins.includes(address)) {
       users.push({
         username: data,
@@ -64,6 +65,7 @@ io.on("connection", (socket) => {
       // broadcast - because we only want to inform the other users
       // about the new connection and not the user that connected!
     }
+    console.log("sending joind");
     socket.emit("joined", users);
   });
 
@@ -71,6 +73,7 @@ io.on("connection", (socket) => {
     socketDebug("a user disconnected.");
     users.splice(0, 1);
     console.log(users.length);
+    console.log("sending diconnectedUser");
     socket.emit("disconnectedUser", users);
   });
 });
