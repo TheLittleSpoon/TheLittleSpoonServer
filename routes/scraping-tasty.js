@@ -56,7 +56,7 @@ router.get('/recipes/tags/:tag', async (req, res) => {
             name: element.name,
             author: "tasty",
             imageUrl: element.thumbnail_url,
-            categories: req.params.tag,
+            categoryId: req.params.tag,
             instructions: element.instructions
         });
     });
