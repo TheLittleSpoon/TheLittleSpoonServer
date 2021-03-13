@@ -48,6 +48,8 @@ router.put('/', auth, async (req, res) => {
     userId = _.pick(req.body, ['_id']);
     if (!userId) return res.status(400).send('Got no user ID to update.');
 
+    if ((req.user._id != userId) || (!req.user.isAdmin)) return res.status(403).send('No access to this resource.');
+
     let user = await User.findOne({ _id: userId });
     if (!user) return res.status(400).send('User does not exist.');
 
@@ -67,7 +69,9 @@ router.put('/', auth, async (req, res) => {
 
 // Delete a category
 // Only an admin can delete a user
-router.delete('/:id', [auth, admin], async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
+    if ((req.user._id != req.params.id) || (!req.user.isAdmin)) return res.status(403).send('No access to this resource.');
+
     let user = await User.findOne({ _id: req.params.id });
     if (!user) return res.status(400).send('User does not exist.');
 
@@ -76,11 +80,16 @@ router.delete('/:id', [auth, admin], async (req, res) => {
 });
 
 // Special Query
-router.get('/byFilter', [ auth, admin], async (req, res) => {
+router.post('/byFilter', [ auth, admin ], async (req, res) => {
     let { name, recipeNumber, isAdmin } = _.pick(req.body, ['name', 'recipeNumber', 'isAdmin']);
 
-    let users = await User.find({ name: { $regex: name }, isAdmin: isAdmin });
-    let finalUsers = []
+    let query = [];
+
+    if (name && (name != "")) query.push({"name": { $regex: name }});
+    if (isAdmin) query.push({isAdmin: isAdmin});
+
+    let users = await User.find({ $and: query });
+    let finalUsers = [];
     
     await Promise.all(users.map(async (element) => {
         let recipes = await Recipe.find({ author: element._id });

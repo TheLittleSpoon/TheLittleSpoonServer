@@ -12,19 +12,14 @@ const Category = mongoose.model(
       lowercase: true,
       trim: true,
       required: true,
-    },
-    imageUrl: {
-      type: String,
-      required: true,
-    },
+    }
   })
 );
 
 // Recipe validation.
 function validateCategory(category) {
   const schema = Joi.object({
-    name: Joi.string().min(2).max(255).required(),
-    imageUrl: Joi.string().required()
+    name: Joi.string().min(2).max(255).required()
   });
 
   return schema.validate(category);

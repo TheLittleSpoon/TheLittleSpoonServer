@@ -21,10 +21,10 @@ router.post('/', [auth, admin], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    category = new Category(_.pick(req.body, 'name', 'imageUrl'));
+    category = new Category(_.pick(req.body, 'name'));
 
     await category.save();
-    res.status(200).send(_.pick(category, ['_id', 'name', 'imageUrl']));
+    res.status(200).send(_.pick(category, ['_id', 'name']));
 })
 
 // Update category
