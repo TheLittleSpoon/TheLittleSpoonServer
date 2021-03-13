@@ -81,6 +81,7 @@ function masterScrapper() {
     });
 }
 
-createCategories();
-// createRecipes(tag);
+// createCategories();
+// createRecipes("gluten_free");
+// createRecipes("5_ingredients_or_less");
 // mongoose.connection.close();
