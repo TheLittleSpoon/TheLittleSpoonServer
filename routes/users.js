@@ -78,7 +78,7 @@ router.delete('/:id', [auth, admin], async (req, res) => {
 router.get('/byFilter', [ auth, admin], async (req, res) => {
     let { name, recipeNumber, isAdmin } = _.pick(req.body, ['name', 'recipeNumber', 'isAdmin']);
 
-    
+        
 });
 
 module.exports = router;
