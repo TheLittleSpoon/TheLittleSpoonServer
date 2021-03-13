@@ -21,10 +21,7 @@ function createRecipes(tag) {
         res.body.forEach(async (element) => {
             try {
                 let category = await Category.findOne({ name: element.categories }).select("_id");
-                // let { categoryId } = category._id;
-                // console.log("name: " + element.name);
-                // console.log("image: "+ element.image);
-                // console.log("instructions: "+ element.instructions);
+                
                 const recipesReq = unirest("POST", `http://localhost:3000/api/recipes/create`);
                 recipesReq.headers({
                     "x-auth-token": token
@@ -82,6 +79,6 @@ function masterScrapper() {
 }
 
 // createCategories();
-// createRecipes("gluten_free");
+createRecipes("gluten_free");
 // createRecipes("5_ingredients_or_less");
 // mongoose.connection.close();

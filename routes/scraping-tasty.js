@@ -52,16 +52,26 @@ router.get('/recipes/tags/:tag', async (req, res) => {
         const recipes = tastyRes.body.results;
         const spoonRecipes = [];
 
-        spoonRecipes.push({
-            name: element.name,
-            author: "tasty",
-            image: element.thumbnail_url,
-            categories: req.params.tag,
-            instructions: element.instructions
+        recipes.forEach(element => {
+            let instructions = "";
+
+            if (element.instructions) {
+                element.instructions.forEach(element => {
+                    instructions += ` \n ${element.display_text}`;
+                });
+            }
+
+            spoonRecipes.push({
+                name: element.name,
+                author: "tasty",
+                image: element.thumbnail_url,
+                categories: req.params.tag,
+                instructions: instructions
+            });
         });
+
+        res.send(spoonRecipes);
     });
-    // console.log(spoonRecipes);
-    res.send(spoonRecipes);
 });
 
 module.exports = router;

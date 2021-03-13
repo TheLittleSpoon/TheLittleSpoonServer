@@ -21,13 +21,13 @@ router.post('/create', auth, async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    recipe = new Recipe(_.pick(req.body, ['name', 'ingredients', 'instructions', 'imageUrl', 'categories']));
+    recipe = new Recipe(_.pick(req.body, ['name', 'ingredients', 'instructions', 'image', 'categories']));
 
     // Author is the user that is creating the recipe.
     recipe.author = req.user._id;
 
     await recipe.save();
-    res.status(200).send(_.pick(recipe, ['_id', 'name', 'author', 'ingredients', 'instructions', 'imageUrl', 'categories']));
+    res.status(200).send(_.pick(recipe, ['_id', 'name', 'author', 'ingredients', 'instructions', 'image', 'categories']));
 })
 
 // Update recipe
@@ -42,19 +42,19 @@ router.put('/', auth, async (req, res) => {
     // If this isn't this user's recipe, return denied.
     if (recipe.author != req.user._id) return res.status(403).send('No access to this resource.');
 
-    let { name, ingredients, instructions, imageUrl, categories } = _.pick(req.body, ['name', 'ingredients', 'instructions', 'imageUrl', 'categories']);
+    let { name, ingredients, instructions, image, categories } = _.pick(req.body, ['name', 'ingredients', 'instructions', 'image', 'categories']);
 
     await Recipe.updateOne({ _id: recipeId }, {
         name: name,
         ingredients: ingredients,
         instructions: instructions,
-        imageUrl: imageUrl,
+        image: image,
         categories: categories
     }, { omitUndefined: true });
 
     recipe = await Recipe.findOne({ _id: recipeId });
 
-    res.status(200).send(_.pick(recipe, ['_id', 'name', 'ingredients', 'instructions', 'imageUrl', 'categories']));
+    res.status(200).send(_.pick(recipe, ['_id', 'name', 'ingredients', 'instructions', 'image', 'categories']));
 });
 
 // Delete a recipe
@@ -90,7 +90,7 @@ router.get('/categories', async (req, res) => {
     let recipes = await Recipe.aggregate([
         { $group: {
             _id: "$categories",
-            data: { $push: { name: '$name', author: '$author', imageUrl: '$imageUrl', ingredients: '$ingredients', instructions: '$instructions', categoryId: '$categoryId'}},
+            data: { $push: { name: '$name', author: '$author', imageUrl: '$imageUrl', ingredients: '$ingredients', instructions: '$instructions', categories: '$categories'}},
         } }
     ]);
 
