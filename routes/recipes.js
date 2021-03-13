@@ -70,4 +70,31 @@ router.delete('/:id', auth, async (req, res) => {
     res.send(recipe);
 });
 
+// Special Query
+router.post('/byFilter', async (req, res) => {
+    let { name, category, ingredient } = _.pick(req.body, ['name', 'category', 'ingredient']);
+
+    let query = [];
+
+    if (name && (name != "")) query.push({"name": { $regex: name }});
+    if (category && (category != "")) query.push({"categories": category});
+    if (ingredient && (ingredient != "")) query.push({"ingredients.name": { $regex: ingredient }});
+
+    let recipes = await Recipe.find({ $and: query });
+
+    res.send(recipes);
+});
+
+// Group by categories
+router.get('/categories', async (req, res) => {
+    let recipes = await Recipe.aggregate([
+        { $group: {
+            _id: "$categories",
+            data: { $push: { name: '$name', author: '$author', imageUrl: '$imageUrl', ingredients: '$ingredients', instructions: '$instructions', categoryId: '$categoryId'}},
+        } }
+    ]);
+
+    res.send(recipes);
+});
+
 module.exports = router;

@@ -76,11 +76,16 @@ router.delete('/:id', [auth, admin], async (req, res) => {
 });
 
 // Special Query
-router.get('/byFilter', [ auth, admin], async (req, res) => {
+router.post('/byFilter', [ auth, admin ], async (req, res) => {
     let { name, recipeNumber, isAdmin } = _.pick(req.body, ['name', 'recipeNumber', 'isAdmin']);
 
-    let users = await User.find({ name: { $regex: name }, isAdmin: isAdmin });
-    let finalUsers = []
+    let query = [];
+
+    if (name && (name != "")) query.push({"name": { $regex: name }});
+    if (isAdmin) query.push({isAdmin: isAdmin});
+
+    let users = await User.find({ $and: query });
+    let finalUsers = [];
     
     await Promise.all(users.map(async (element) => {
         let recipes = await Recipe.find({ author: element._id });
