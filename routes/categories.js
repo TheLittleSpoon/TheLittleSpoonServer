@@ -25,7 +25,25 @@ router.post('/', [ auth, admin ], async (req, res) => {
 
     await category.save();
     res.status(200).send(_.pick(category, ['_id', 'name']));
-})
+});
+
+// Update category
+// only admin
+router.put('/', [ auth, admin ], async (req, res) => {
+    categoryId = _.pick(req.body, ['_id']);
+    if (!categoryId) return res.status(400).send('Got no category ID to update.');
+
+    let category = await Category.findOne({ _id: categoryId });
+    if (!category) return res.status(400).send('Category does not exist.');
+
+    let { name } = _.pick(req.body, ['name']);
+
+    await Category.updateOne({ _id: categoryId }, { name: name }, { omitUndefined: true });
+
+    category = await Category.findOne({ _id: categoryId });
+
+    res.status(200).send(_.pick(category, ['_id', 'name']));
+});
 
 // Delete a category
 // Only an admin can delete a category
