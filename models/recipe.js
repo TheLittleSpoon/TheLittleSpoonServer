@@ -48,7 +48,7 @@ const Recipe = mongoose.model(
       required: true,
     },
     instructions: {
-      type: [String],
+      type: String,
       required: true,
     },
     categories: {
@@ -73,7 +73,7 @@ function validateRecipe(recipe) {
         })
       )
       .required(),
-    instructions: Joi.array().items(Joi.string()).required(),
+    instructions: Joi.string().required(),
     image: Joi.string().required(),
     categories: Joi.objectId().required()
   });
