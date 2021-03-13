@@ -40,7 +40,7 @@ router.put('/', auth, async (req, res) => {
     if (!recipe) return res.status(400).send('Recipe does not exist.');
 
     // If this isn't this user's recipe, return denied.
-    if (recipe.author != req.user._id) return res.status(403).send('No access to this resource.');
+    if ((recipe.author != req.user._id) || (!req.user.isAdmin)) return res.status(403).send('No access to this resource.');
 
     let { name, ingredients, instructions, image, categories } = _.pick(req.body, ['name', 'ingredients', 'instructions', 'image', 'categories']);
 
@@ -64,7 +64,7 @@ router.delete('/:id', auth, async (req, res) => {
     if (!recipe) return res.status(400).send('Recipe does not exist.');
 
     // If this isn't this user's recipe, return denied.
-    if (recipe.author != req.user._id) return res.status(403).send('No access to this resource.');
+    if ((recipe.author != req.user._id) || (!req.user.isAdmin)) return res.status(403).send('No access to this resource.');
 
     await Recipe.deleteOne({ _id: req.params.id });
     res.send(recipe);
