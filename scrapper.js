@@ -20,7 +20,7 @@ function createRecipes(tag) {
         // Foreach recipe
         res.body.forEach(async (element) => {
             try {
-                let category = await Category.findOne({ name: element.categories }).select("_id");
+                let category = await Category.findOne({ name: element.categoryId }).select("_id");
                 // let { categoryId } = category._id;
                 // console.log("name: " + element.name);
                 // console.log("image: "+ element.image);
@@ -33,19 +33,19 @@ function createRecipes(tag) {
                     "name": element.name,
                     "ingredients": [],
                     "instructions": element.instructions,
-                    "image": element.image,
-                    "categories": category._id
+                    "imageUrl": element.imageUrl,
+                    "categoryId": category._id
                 });
                 recipesReq.end(function (recipesRes) {
-                if (recipesRes.error) throw new Error(recipesRes.error);
-                console.log(recipesRes.body);
+                    if (recipesRes.error) throw new Error(recipesRes.error);
+                    console.log(recipesRes.body);
                 });
             }
             catch (e) {
                 console.log("element: " + element.name + "\n Error: " + e);
             }
-            });
         });
+    });
 };
 
 function createCategories() {

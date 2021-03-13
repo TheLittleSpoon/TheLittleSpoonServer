@@ -9,7 +9,7 @@ let server;
 describe('auth middleware', () => {
 
     beforeEach(() => server = require('../../server'));
-    afterEach(async () => { 
+    afterEach(async () => {
         await Recipe.deleteMany({});
         server.close();
     });
@@ -22,20 +22,20 @@ describe('auth middleware', () => {
             .set('x-auth-token', token)
             .send({
                 "name": "recipe",
-                "ingredients": [ 
+                "ingredients": [
                     {
                         "name": "ing1",
                         "quantity": "1",
-                        "measuringUnit": "Kg"
+                        "unit": "Kg"
                     },
                     {
                         "name": "ing2",
                         "quantity": "10",
-                        "measuringUnit": "L"
+                        "unit": "L"
                     }
                 ],
-                "instructions": [ "step a" ]
-        });
+                "instructions": "step a"
+            });
     };
 
     beforeEach(async () => {

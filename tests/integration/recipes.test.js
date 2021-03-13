@@ -8,7 +8,7 @@ let server;
 
 describe('/api/recipes', () => {
     beforeEach(() => server = require('../../server'));
-    afterEach(async () => { 
+    afterEach(async () => {
         await Recipe.deleteMany({});
         server.close();
     });
@@ -18,30 +18,30 @@ describe('/api/recipes', () => {
             await Recipe.collection.insertMany([
                 {
                     "name": "recipe1",
-                    "ingredients": [ 
+                    "ingredients": [
                         {
                             "name": "ing1",
                             "quantity": "1",
-                            "measuringUnit": "Kg"
+                            "unit": "Kg"
                         },
                         {
                             "name": "ing2",
                             "quantity": "10",
-                            "measuringUnit": "L"
+                            "unit": "L"
                         }
                     ],
-                    "instructions": [ "step a" ]
+                    "instructions": "step a"
                 },
                 {
                     "name": "recipe2",
-                    "ingredients": [ 
+                    "ingredients": [
                         {
                             "name": "ing1",
                             "quantity": "500",
-                            "measuringUnit": "g"
+                            "unit": "g"
                         }
                     ],
-                    "instructions": [ "step a", "step b" ]
+                    "instructions": "step a"
                 }
             ]);
 
@@ -65,20 +65,20 @@ describe('/api/recipes', () => {
                 .set('x-auth-token', token)
                 .send({
                     "name": recipeName,
-                    "ingredients": [ 
+                    "ingredients": [
                         {
                             "name": "ing1",
                             "quantity": "1",
-                            "measuringUnit": "Kg"
+                            "unit": "Kg"
                         },
                         {
                             "name": "ing2",
                             "quantity": "10",
-                            "measuringUnit": "L"
+                            "unit": "L"
                         }
                     ],
-                    "instructions": [ "step a" ]
-            });
+                    "instructions": "step a"
+                });
         };
 
         beforeEach(async () => {
