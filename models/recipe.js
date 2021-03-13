@@ -17,9 +17,8 @@ var ingredientSchema = new mongoose.Schema({
     },
     required: true,
   },
-  measuringUnit: {
+  unit: {
     type: String,
-    enum: ["g", "Kg", "ml", "L"],
     required: true,
   },
 });
@@ -40,7 +39,7 @@ const Recipe = mongoose.model(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
-    image: { 
+    imageUrl: {
       type: String,
       required: true
     },
@@ -49,7 +48,7 @@ const Recipe = mongoose.model(
       required: true,
     },
     instructions: {
-      type: [String],
+      type: String,
       required: true,
     },
     categories: {
@@ -70,12 +69,12 @@ function validateRecipe(recipe) {
         Joi.object({
           name: Joi.string().min(2).max(255).required(),
           quantity: Joi.number().required(),
-          measuringUnit: Joi.string().required(),
+          unit: Joi.string().required(),
         })
       )
       .required(),
-    instructions: Joi.array().items(Joi.string()).required(),
-    image: Joi.string().required(),
+    instructions: Joi.string(),
+    imageUrl: Joi.string().required(),
     categories: Joi.objectId().required()
   });
 

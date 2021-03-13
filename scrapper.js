@@ -33,19 +33,19 @@ function createRecipes(tag) {
                     "name": element.name,
                     "ingredients": [],
                     "instructions": element.instructions,
-                    "image": element.image,
+                    "imageUrl": element.imageUrl,
                     "categories": category._id
                 });
                 recipesReq.end(function (recipesRes) {
-                if (recipesRes.error) throw new Error(recipesRes.error);
-                console.log(recipesRes.body);
+                    if (recipesRes.error) throw new Error(recipesRes.error);
+                    console.log(recipesRes.body);
                 });
             }
             catch (e) {
                 console.log("element: " + element.name + "\n Error: " + e);
             }
-            });
         });
+    });
 };
 
 function createCategories() {

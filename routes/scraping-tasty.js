@@ -18,7 +18,7 @@ querySize = "20";
 // Get all tags
 // Everyone can get it.
 router.get('/tags', async (req, res) => {
-    
+
     const tastyReq = unirest("GET", "https://tasty.p.rapidapi.com/tags/list");
     tastyReq.headers(headers);
     tastyReq.end(function (tastyRes) {
@@ -38,7 +38,7 @@ router.get('/tags', async (req, res) => {
 // Get all recipes of a specific tag
 // Everyone can get it.
 router.get('/recipes/tags/:tag', async (req, res) => {
-    
+
     const tastyReq = unirest("GET", "https://tasty.p.rapidapi.com/recipes/list");
     tastyReq.query({
         "from": "0",
@@ -52,26 +52,16 @@ router.get('/recipes/tags/:tag', async (req, res) => {
         const recipes = tastyRes.body.results;
         const spoonRecipes = [];
 
-        recipes.forEach(element => {
-            let instructions = [];
-
-            if (element.instructions) {
-                element.instructions.forEach(element => {
-                    instructions.push(element.display_text);
-                });
-            }
-
-            spoonRecipes.push({
-                name: element.name,
-                author: "tasty",
-                image: element.thumbnail_url,
-                categories: req.params.tag,
-                instructions: instructions
-            });
+        spoonRecipes.push({
+            name: element.name,
+            author: "tasty",
+            imageUrl: element.thumbnail_url,
+            categories: req.params.tag,
+            instructions: element.instructions
         });
-        // console.log(spoonRecipes);
-        res.send(spoonRecipes);
     });
+    // console.log(spoonRecipes);
+    res.send(spoonRecipes);
 });
 
 module.exports = router;
