@@ -76,7 +76,7 @@ router.delete('/:id', [auth, admin], async (req, res) => {
 });
 
 // Special Query
-router.get('/byFilter', [ auth, admin], async (req, res) => {
+router.get('/byFilter', [ auth, admin ], async (req, res) => {
     let { name, recipeNumber, isAdmin } = _.pick(req.body, ['name', 'recipeNumber', 'isAdmin']);
 
     let users = await User.find({ name: { $regex: name }, isAdmin: isAdmin });
