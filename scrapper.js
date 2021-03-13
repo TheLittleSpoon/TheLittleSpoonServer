@@ -56,8 +56,7 @@ function createCategories() {
                 "x-auth-token": token
             });
             tagsReq.type('json').send({
-                "name": element,
-                "image": "image"
+                "name": element
             });
             // console.log(element);
             tagsReq.end(function (tagsRes) {
@@ -78,7 +77,7 @@ function masterScrapper() {
     });
 }
 
-// createCategories();
-createRecipes("gluten_free");
+createCategories();
+// createRecipes("gluten_free");
 // createRecipes("5_ingredients_or_less");
 // mongoose.connection.close();
