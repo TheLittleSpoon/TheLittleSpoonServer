@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const { User, validate } = require('../models/user');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const { Recipe } = require('../models/recipe');
 const router = express.Router();
 
 // Get my details.
@@ -66,15 +67,27 @@ router.put('/', auth, async (req, res) => {
 
 // Delete a category
 // Only an admin can delete a user
-router.delete('/', [auth, admin], async (req, res) => {
-    userId = _.pick(req.body, ['_id']);
-    if (!userId) return res.status(400).send('Got no user ID to delete.');
-
-    let user = await User.findOne({ _id: userId });
+router.delete('/:id', [auth, admin], async (req, res) => {
+    let user = await User.findOne({ _id: req.params.id });
     if (!user) return res.status(400).send('User does not exist.');
 
-    await User.deleteOne({ _id: req.body._id });
+    await User.deleteOne({ _id: req.params.id });
     res.send(user)
+});
+
+// Special Query
+router.get('/byFilter', [ auth, admin], async (req, res) => {
+    let { name, recipeNumber, isAdmin } = _.pick(req.body, ['name', 'recipeNumber', 'isAdmin']);
+
+    let users = await User.find({ name: { $regex: name }, isAdmin: isAdmin });
+    let finalUsers = []
+    
+    await Promise.all(users.map(async (element) => {
+        let recipes = await Recipe.find({ author: element._id });
+        if (recipes && (recipes.length > recipeNumber)) finalUsers.push(element);
+    }));
+    
+    res.send(finalUsers);
 });
 
 module.exports = router;

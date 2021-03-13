@@ -17,44 +17,41 @@ router.get('/', async (req, res) => {
 
 // Create a new category
 // Every admin can do it.
-router.post('/', [ auth, admin ], async (req, res) => {
+router.post('/', [auth, admin], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    category = new Category(_.pick(req.body, 'name'));
+    category = new Category(_.pick(req.body, 'name', 'imageUrl'));
 
     await category.save();
-    res.status(200).send(_.pick(category, ['_id', 'name']));
-});
+    res.status(200).send(_.pick(category, ['_id', 'name', 'imageUrl']));
+})
 
 // Update category
 // only admin
-router.put('/', [ auth, admin ], async (req, res) => {
+router.put('/', [auth, admin], async (req, res) => {
     categoryId = _.pick(req.body, ['_id']);
     if (!categoryId) return res.status(400).send('Got no category ID to update.');
 
     let category = await Category.findOne({ _id: categoryId });
     if (!category) return res.status(400).send('Category does not exist.');
 
-    let { name } = _.pick(req.body, ['name']);
+    let { name } = _.pick(req.body, ['name', 'imageUrl']);
 
     await Category.updateOne({ _id: categoryId }, { name: name }, { omitUndefined: true });
 
     category = await Category.findOne({ _id: categoryId });
 
-    res.status(200).send(_.pick(category, ['_id', 'name']));
+    res.status(200).send(_.pick(category, ['_id', 'name', 'imageUrl']));
 });
 
 // Delete a category
 // Only an admin can delete a category
-router.delete('/', [auth, admin], async (req, res) => {
-    categoryId = _.pick(req.body, ['_id']);
-    if (!categoryId) return res.status(400).send('Got no category ID to delete.');
-
-    let category = await Category.findOne({ _id: categoryId });
+router.delete('/:id', [auth, admin], async (req, res) => {
+    let category = await Category.findOne({ _id: req.params.id });
     if (!category) return res.status(400).send('Category does not exist.');
 
-    await Category.deleteOne({ _id: req.body._id });
+    await Category.deleteOne({ _id: req.params.id });
     res.send(category)
 });
 

@@ -13,6 +13,10 @@ const Category = mongoose.model(
       trim: true,
       required: true,
     },
+    imageUrl: {
+      type: String,
+      required: true,
+    },
   })
 );
 
@@ -20,6 +24,7 @@ const Category = mongoose.model(
 function validateCategory(category) {
   const schema = Joi.object({
     name: Joi.string().min(2).max(255).required(),
+    imageUrl: Joi.string().required()
   });
 
   return schema.validate(category);

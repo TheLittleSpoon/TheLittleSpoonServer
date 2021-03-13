@@ -25,8 +25,13 @@ router.get('/tags', async (req, res) => {
         if (tastyRes.error) throw new Error(tastyRes.error);
 
         const tags = tastyRes.body.results;
+        let tagNames = [];
 
-        res.send(tags);
+        tags.forEach(element => {
+            tagNames.push(element.name);
+        });
+
+        res.send(tagNames);
     });
 });
 
@@ -45,15 +50,27 @@ router.get('/recipes/tags/:tag', async (req, res) => {
         if (tastyRes.error) throw new Error(tastyRes.error);
 
         const recipes = tastyRes.body.results;
+        const spoonRecipes = [];
 
         recipes.forEach(element => {
-            console.log(element.name);
-            console.log(element.thumbnail_url); //image
-            console.log(element.tags); // Categories
-            console.log(element.instructions);
-        });
+            let instructions = " ";
 
-        res.send(recipes);
+            if (element.instructions) {
+                element.instructions.forEach(element => {
+                    instructions += `\n ${element.display_text}`;
+                });
+            }
+
+            spoonRecipes.push({
+                name: element.name,
+                author: "tasty",
+                image: element.thumbnail_url,
+                categories: req.params.tag,
+                instructions: instructions
+            });
+        });
+        // console.log(spoonRecipes);
+        res.send(spoonRecipes);
     });
 });
 
