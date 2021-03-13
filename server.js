@@ -49,19 +49,29 @@ require("./startup/prod")(app);
 const port = config.get("port");
 const appName = config.get("name");
 
+let validOrigins = ['http://localhost:6200', 'http://35.192.214.216/']
+let users = [];
 io.on("connection", (socket) => {
   socketDebug("a user connected.");
-  // broadcast - because we only want to inform the other users
-  // about the new connection and not the user that connected!
-  socket.broadcast.emit("joined", "");
+
+  socket.on("login", (data) => {
+    let address = socket.handshake.headers.origin
+    if (validOrigins.includes(address)) {
+      users.push({
+        username: data,
+      });
+      console.log(users.length);
+      // broadcast - because we only want to inform the other users
+      // about the new connection and not the user that connected!
+    }
+    socket.broadcast.emit("joined", users);
+  });
 
   socket.on("disconnect", () => {
     socketDebug("a user disconnected.");
-    socket.broadcast.emit("disconnected", "");
-  });
-
-  socket.on("new message", (msg) => {
-    io.emit("new message", msg);
+    users.splice(0, 1);
+    console.log(users.length);
+    socket.broadcast.emit("disconnectedUser", users);
   });
 });
 
