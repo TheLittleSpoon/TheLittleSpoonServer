@@ -66,6 +66,7 @@ io.on("connection", (socket) => {
       // about the new connection and not the user that connected!
     }
     console.log("sending joind");
+    socket.broadcast.emit("joined", users);
     socket.emit("joined", users);
   });
 
@@ -74,6 +75,7 @@ io.on("connection", (socket) => {
     users.splice(0, 1);
     console.log(users.length);
     console.log("sending diconnectedUser");
+    socket.broadcast.emit("disconnectedUser", users);
     socket.emit("disconnectedUser", users);
   });
 });
