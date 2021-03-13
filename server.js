@@ -9,20 +9,20 @@ const bodyParser = require('body-parser');
 //   httpServer: server
 // })
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 
 // All incoming request can parse json data
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
-  // Allow any (*) domain to my resource
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  // This incoming request may have this headers
-  res.setHeader('Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, x-auth-token');
-  res.setHeader('Access-Control-Allow-Methods',
-    ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
-  next();
+    // Allow any (*) domain to my resource
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    // This incoming request may have this headers
+    res.setHeader('Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept, x-auth-token');
+    res.setHeader('Access-Control-Allow-Methods',
+        ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
+    next();
 })
 
 const server = require("http").createServer(app);
@@ -30,11 +30,11 @@ const config = require("config");
 const logger = require("./startup/logging");
 const startupDebug = require("debug")("app:startup");
 const socketDebug = require("debug")("app:socket");
-const io = require("socket.io")(server,  {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST", "OPTIONS"]
-  }
+const io = require("socket.io")(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST", "OPTIONS"]
+    }
 });
 
 // Startup folder loading.
@@ -50,44 +50,36 @@ const port = config.get("port");
 const appName = config.get("name");
 
 
-
-
+let validOrigins = ['http://localhost:6200', 'http://35.192.214.216/']
+let users = [];
 io.on("connection", (socket) => {
-  socketDebug("a user connected.");
-  let users = [];
-  for (let [id, socket] of io.of("/").sockets) {
-    users.push({
-      userID: id,
-      username: socket.username,
+    socketDebug("a user connected.");
+
+    socket.on("login", (data) => {
+        let address = socket.handshake.headers.origin
+        if (validOrigins.includes(address)) {
+            users.push({
+                username: data,
+            });
+            console.log(users.length);
+            // broadcast - because we only want to inform the other users
+            // about the new connection and not the user that connected!
+        }
+        socket.broadcast.emit("joined", users);
     });
-  }
 
-  // broadcast - because we only want to inform the other users
-  // about the new connection and not the user that connected!
-  socket.broadcast.emit("joined", users);
-
-  socket.on("disconnect", () => {
-    socketDebug("a user disconnected.");
-    let users = [];
-    for (let [id, socket] of io.of("/").sockets) {
-      users.push({
-        userID: id,
-        username: socket.username,
-      });
-    }
-
-    socket.broadcast.emit("disconnectedUser", users);
-  });
-
-  socket.on("new message", (msg) => {
-    io.emit("new message", msg);
-  });
+    socket.on("disconnect", () => {
+        socketDebug("a user disconnected.");
+        users.splice(0, 1);
+        console.log(users.length);
+        socket.broadcast.emit("disconnectedUser", users);
+    });
 });
 
 const mainServer = server.listen(port, () => {
-  startupDebug(`${appName} started on port ${port}`);
-  logger.info(`${appName} started on port ${port}`);
-  console.log('listening on port ', port);
+    startupDebug(`${appName} started on port ${port}`);
+    logger.info(`${appName} started on port ${port}`);
+    console.log('listening on port ', port);
 });
 
 module.exports = mainServer;
