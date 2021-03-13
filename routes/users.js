@@ -74,4 +74,11 @@ router.delete('/:id', [auth, admin], async (req, res) => {
     res.send(user)
 });
 
+// Special Query
+router.get('/byFilter', [ auth, admin], async (req, res) => {
+    let { name, recipeNumber, isAdmin } = _.pick(req.body, ['name', 'recipeNumber', 'isAdmin']);
+
+    
+});
+
 module.exports = router;

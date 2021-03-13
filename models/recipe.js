@@ -17,9 +17,8 @@ var ingredientSchema = new mongoose.Schema({
     },
     required: true,
   },
-  measuringUnit: {
+  unit: {
     type: String,
-    enum: ["g", "Kg", "ml", "L"],
     required: true,
   },
 });
@@ -70,7 +69,7 @@ function validateRecipe(recipe) {
         Joi.object({
           name: Joi.string().min(2).max(255).required(),
           quantity: Joi.number().required(),
-          measuringUnit: Joi.string().required(),
+          unit: Joi.string().required(),
         })
       )
       .required(),
