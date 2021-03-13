@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const { User, validate } = require('../models/user');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const { Recipe } = require('../models/recipe');
 const router = express.Router();
 
 // Get my details.
@@ -78,7 +79,15 @@ router.delete('/:id', [auth, admin], async (req, res) => {
 router.get('/byFilter', [ auth, admin], async (req, res) => {
     let { name, recipeNumber, isAdmin } = _.pick(req.body, ['name', 'recipeNumber', 'isAdmin']);
 
-        
+    let users = await User.find({ name: { $regex: name }, isAdmin: isAdmin });
+    let finalUsers = []
+    
+    await Promise.all(users.map(async (element) => {
+        let recipes = await Recipe.find({ author: element._id });
+        if (recipes && (recipes.length > recipeNumber)) finalUsers.push(element);
+    }));
+    
+    res.send(finalUsers);
 });
 
 module.exports = router;
