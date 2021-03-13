@@ -48,6 +48,8 @@ router.put('/', auth, async (req, res) => {
     userId = _.pick(req.body, ['_id']);
     if (!userId) return res.status(400).send('Got no user ID to update.');
 
+    if ((req.user._id != userId) || (!req.user.isAdmin)) return res.status(403).send('No access to this resource.');
+
     let user = await User.findOne({ _id: userId });
     if (!user) return res.status(400).send('User does not exist.');
 
@@ -67,7 +69,9 @@ router.put('/', auth, async (req, res) => {
 
 // Delete a category
 // Only an admin can delete a user
-router.delete('/:id', [auth, admin], async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
+    if ((req.user._id != req.params.id) || (!req.user.isAdmin)) return res.status(403).send('No access to this resource.');
+
     let user = await User.findOne({ _id: req.params.id });
     if (!user) return res.status(400).send('User does not exist.');
 
