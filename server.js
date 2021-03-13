@@ -64,14 +64,14 @@ io.on("connection", (socket) => {
       // broadcast - because we only want to inform the other users
       // about the new connection and not the user that connected!
     }
-    socket.broadcast.emit("joined", users);
+    socket.emit("joined", users);
   });
 
   socket.on("disconnect", () => {
     socketDebug("a user disconnected.");
     users.splice(0, 1);
     console.log(users.length);
-    socket.broadcast.emit("disconnectedUser", users);
+    socket.emit("disconnectedUser", users);
   });
 });
 
