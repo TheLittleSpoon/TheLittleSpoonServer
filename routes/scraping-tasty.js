@@ -53,11 +53,11 @@ router.get('/recipes/tags/:tag', async (req, res) => {
         const spoonRecipes = [];
 
         recipes.forEach(element => {
-            let instructions = [];
+            let instructions = " ";
 
             if (element.instructions) {
                 element.instructions.forEach(element => {
-                    instructions.push(element.display_text);
+                    instructions += `\n ${element.display_text}`;
                 });
             }
 
