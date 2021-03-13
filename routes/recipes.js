@@ -85,4 +85,16 @@ router.post('/byFilter', async (req, res) => {
     res.send(recipes);
 });
 
+// Group by categories
+router.get('/categories', async (req, res) => {
+    let recipes = await Recipe.aggregate([
+        { $group: {
+            _id: "$categories",
+            data: { $push: { name: '$name', author: '$author', imageUrl: '$imageUrl', ingredients: '$ingredients', instructions: '$instructions', categoryId: '$categoryId'}},
+        } }
+    ]);
+
+    res.send(recipes);
+});
+
 module.exports = router;
