@@ -1,0 +1,449 @@
+Index: server.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// This is the starting point of this application.\r\n// Here we are calling all the routes, middlewares and other nessaccery packages we need.\r\nconst express = require(\"express\");\r\nconst app = express();\r\nconst bodyParser = require('body-parser');\r\n\r\n// It doesn't work - or maybe package.json is not configured properly... => TODO\r\n// const wsServer = new ws({\r\n//   httpServer: server\r\n// })\r\n\r\napp.use(bodyParser.urlencoded({ extended: false }));\r\n\r\n// All incoming request can parse json data\r\napp.use(bodyParser.json());\r\n\r\napp.use((req, res, next) => {\r\n  // Allow any (*) domain to my resource\r\n  res.setHeader('Access-Control-Allow-Origin', '*');\r\n  // This incoming request may have this headers\r\n  res.setHeader('Access-Control-Allow-Headers',\r\n    'Origin, X-Requested-With, Content-Type, Accept, x-auth-token');\r\n  res.setHeader('Access-Control-Allow-Methods',\r\n    ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);\r\n  next();\r\n})\r\n\r\nconst server = require(\"http\").createServer(app);\r\nconst config = require(\"config\");\r\nconst logger = require(\"./startup/logging\");\r\nconst startupDebug = require(\"debug\")(\"app:startup\");\r\nconst socketDebug = require(\"debug\")(\"app:socket\");\r\nconst io = require(\"socket.io\")(server,  {\r\n  cors: {\r\n    origin: \"*\",\r\n    methods: [\"GET\", \"POST\", \"OPTIONS\"]\r\n  }\r\n});\r\n\r\n// Startup folder loading.\r\nrequire(\"./startup/logging\");\r\nrequire(\"./startup/validation\")();\r\nrequire(\"./startup/config\")();\r\nrequire(\"./startup/db\")();\r\nrequire(\"./startup/routes\")(app);\r\nrequire(\"./startup/prod\")(app);\r\n\r\n// Config variables\r\nconst port = config.get(\"port\");\r\nconst appName = config.get(\"name\");\r\n\r\n\r\n\r\n\r\nio.on(\"connection\", (socket) => {\r\n  socketDebug(\"a user connected.\");\r\n  let users = [];\r\n  for (let [id, socket] of io.of(\"/\").sockets) {\r\n    users.push({\r\n      userID: id,\r\n      username: socket.username,\r\n    });\r\n  }\r\n\r\n  // broadcast - because we only want to inform the other users\r\n  // about the new connection and not the user that connected!\r\n  socket.broadcast.emit(\"joined\", users);\r\n\r\n  socket.on(\"disconnect\", () => {\r\n    socketDebug(\"a user disconnected.\");\r\n    let users = [];\r\n    for (let [id, socket] of io.of(\"/\").sockets) {\r\n      users.push({\r\n        userID: id,\r\n        username: socket.username,\r\n      });\r\n    }\r\n\r\n    socket.broadcast.emit(\"disconnectedUser\", users);\r\n  });\r\n\r\n  socket.on(\"new message\", (msg) => {\r\n    io.emit(\"new message\", msg);\r\n  });\r\n});\r\n\r\nconst mainServer = server.listen(port, () => {\r\n  startupDebug(`${appName} started on port ${port}`);\r\n  logger.info(`${appName} started on port ${port}`);\r\n  console.log('listening on port ', port);\r\n});\r\n\r\nmodule.exports = mainServer;\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server.js b/server.js
+--- a/server.js	(revision 04f88b0d94a22895f524520328494307be102894)
++++ b/server.js	(date 1615650555777)
+@@ -9,20 +9,20 @@
+ //   httpServer: server
+ // })
+ 
+-app.use(bodyParser.urlencoded({ extended: false }));
++app.use(bodyParser.urlencoded({extended: false}));
+ 
+ // All incoming request can parse json data
+ app.use(bodyParser.json());
+ 
+ app.use((req, res, next) => {
+-  // Allow any (*) domain to my resource
+-  res.setHeader('Access-Control-Allow-Origin', '*');
+-  // This incoming request may have this headers
+-  res.setHeader('Access-Control-Allow-Headers',
+-    'Origin, X-Requested-With, Content-Type, Accept, x-auth-token');
+-  res.setHeader('Access-Control-Allow-Methods',
+-    ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
+-  next();
++    // Allow any (*) domain to my resource
++    res.setHeader('Access-Control-Allow-Origin', '*');
++    // This incoming request may have this headers
++    res.setHeader('Access-Control-Allow-Headers',
++        'Origin, X-Requested-With, Content-Type, Accept, x-auth-token');
++    res.setHeader('Access-Control-Allow-Methods',
++        ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
++    next();
+ })
+ 
+ const server = require("http").createServer(app);
+@@ -30,11 +30,11 @@
+ const logger = require("./startup/logging");
+ const startupDebug = require("debug")("app:startup");
+ const socketDebug = require("debug")("app:socket");
+-const io = require("socket.io")(server,  {
+-  cors: {
+-    origin: "*",
+-    methods: ["GET", "POST", "OPTIONS"]
+-  }
++const io = require("socket.io")(server, {
++    cors: {
++        origin: "*",
++        methods: ["GET", "POST", "OPTIONS"]
++    }
+ });
+ 
+ // Startup folder loading.
+@@ -50,44 +50,36 @@
+ const appName = config.get("name");
+ 
+ 
+-
+-
++let validOrigins = ['http://localhost:6200', 'http://35.192.214.216/']
++let users = [];
+ io.on("connection", (socket) => {
+-  socketDebug("a user connected.");
+-  let users = [];
+-  for (let [id, socket] of io.of("/").sockets) {
+-    users.push({
+-      userID: id,
+-      username: socket.username,
+-    });
+-  }
+-
+-  // broadcast - because we only want to inform the other users
+-  // about the new connection and not the user that connected!
+-  socket.broadcast.emit("joined", users);
++    socketDebug("a user connected.");
++
++    socket.on("login", (data) => {
++        let address = socket.handshake.headers.origin
++        if (validOrigins.includes(address)) {
++            users.push({
++                username: data,
++            });
++            console.log(users.length);
++            // broadcast - because we only want to inform the other users
++            // about the new connection and not the user that connected!
++        }
++        socket.broadcast.emit("joined", users);
++    });
+ 
+-  socket.on("disconnect", () => {
+-    socketDebug("a user disconnected.");
+-    let users = [];
+-    for (let [id, socket] of io.of("/").sockets) {
+-      users.push({
+-        userID: id,
+-        username: socket.username,
+-      });
+-    }
+-
+-    socket.broadcast.emit("disconnectedUser", users);
+-  });
+-
+-  socket.on("new message", (msg) => {
+-    io.emit("new message", msg);
+-  });
++    socket.on("disconnect", () => {
++        socketDebug("a user disconnected.");
++        users.splice(0, 1);
++        console.log(users.length);
++        socket.broadcast.emit("disconnectedUser", users);
++    });
+ });
+ 
+ const mainServer = server.listen(port, () => {
+-  startupDebug(`${appName} started on port ${port}`);
+-  logger.info(`${appName} started on port ${port}`);
+-  console.log('listening on port ', port);
++    startupDebug(`${appName} started on port ${port}`);
++    logger.info(`${appName} started on port ${port}`);
++    console.log('listening on port ', port);
+ });
+ 
+ module.exports = mainServer;
+Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml
+new file mode 100644
+--- /dev/null	(date 1615632045388)
++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml	(date 1615632045388)
+@@ -0,0 +1,4 @@
++<changelist name="Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]" date="1615623357685" recycled="true" deleted="true">
++  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch" />
++  <option name="DESCRIPTION" value="Uncommitted changes before Merge at 13/03/2021 10:15 [Default Changelist]" />
++</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43_[Default_Changelist]/shelved.patch
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43_[Default_Changelist]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43_[Default_Changelist]/shelved.patch
+new file mode 100644
+--- /dev/null	(date 1615632004864)
++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43_[Default_Changelist]/shelved.patch	(date 1615632004864)
+@@ -0,0 +1,59 @@
++Index: routes/categories.js
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
++<+>const express = require('express');\r\nconst _ = require('lodash');\r\nconst router = express.Router();\r\n// Models\r\nconst { Category, validate } = require('../models/category');\r\nconst { User } = require('../models/user');\r\n// Middlewares\r\nconst auth = require('../middleware/auth');\r\nconst admin = require('../middleware/admin');\r\n\r\n// Get all categories\r\n// Everyone can get it.\r\nrouter.get('/', async (req, res) => {\r\n    const categories = await Category.find().sort('name');\r\n    res.send(categories);\r\n});\r\n\r\n// Create a new category\r\n// Every admin can do it.\r\nrouter.post('/', [ auth, admin ], async (req, res) => {\r\n    const { error } = validate(req.body);\r\n    if (error) return res.status(400).send(error.details[0].message);\r\n\r\n    category = new Category(_.pick(req.body, 'name'));\r\n\r\n    await category.save();\r\n    res.status(200).send(_.pick(category, ['_id', 'name']));\r\n});\r\n\r\n// Update category\r\n// only admin\r\nrouter.put('/', [ auth, admin ], async (req, res) => {\r\n    categoryId = _.pick(req.body, ['_id']);\r\n    if (!categoryId) return res.status(400).send('Got no category ID to update.');\r\n\r\n    let category = await Category.findOne({ _id: categoryId });\r\n    if (!category) return res.status(400).send('Category does not exist.');\r\n\r\n    let { name } = _.pick(req.body, ['name']);\r\n\r\n    await Category.updateOne({ _id: categoryId }, { name: name }, { omitUndefined: true });\r\n\r\n    category = await Category.findOne({ _id: categoryId });\r\n\r\n    res.status(200).send(_.pick(category, ['_id', 'name']));\r\n});\r\n\r\n// Delete a category\r\n// Only an admin can delete a category\r\nrouter.delete('/', [auth, admin], async (req, res) => {\r\n    categoryId = _.pick(req.body, ['_id']);\r\n    if (!categoryId) return res.status(400).send('Got no category ID to delete.');\r\n\r\n    let category = await Category.findOne({ _id: categoryId });\r\n    if (!category) return res.status(400).send('Category does not exist.');\r\n\r\n    await Category.deleteOne({ _id: req.body._id });\r\n    res.send(category)\r\n});\r\n\r\nmodule.exports = router;
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/routes/categories.js b/routes/categories.js
++--- a/routes/categories.js	(revision 6767489b3749cb208a695a190c67c8e240097fca)
+++++ b/routes/categories.js	(date 1615623357665)
++@@ -58,4 +58,4 @@
++     res.send(category)
++ });
++ 
++-module.exports = router;
++\ No newline at end of file
+++module.exports = router;
++Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch
++new file mode 100644
++--- /dev/null	(date 1615623356648)
+++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch	(date 1615623356648)
++@@ -0,0 +1,17 @@
+++Index: routes/categories.js
+++IDEA additional info:
+++Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+++<+>const express = require('express');\r\nconst _ = require('lodash');\r\nconst router = express.Router();\r\n// Models\r\nconst { Category, validate } = require('../models/category');\r\nconst { User } = require('../models/user');\r\n// Middlewares\r\nconst auth = require('../middleware/auth');\r\nconst admin = require('../middleware/admin');\r\n\r\n// Get all categories\r\n// Everyone can get it.\r\nrouter.get('/', async (req, res) => {\r\n    const categories = await Category.find().sort('name');\r\n    res.send(categories);\r\n});\r\n\r\n// Create a new category\r\n// Every admin can do it.\r\nrouter.post('/', [ auth, admin ], async (req, res) => {\r\n    const { error } = validate(req.body);\r\n    if (error) return res.status(400).send(error.details[0].message);\r\n\r\n    category = new Category(_.pick(req.body, 'name'));\r\n\r\n    await category.save();\r\n    res.status(200).send(_.pick(category, ['_id', 'name']));\r\n})\r\n\r\n// Delete a category\r\n// Only an admin can delete a category\r\nrouter.delete('/', [auth, admin], async (req, res) => {\r\n    categoryId = _.pick(req.body, ['_id']);\r\n    if (!categoryId) return res.status(400).send('Got no category ID to delete.');\r\n\r\n    let category = await Category.findOne({ _id: categoryId });\r\n    if (!category) return res.status(400).send('Category does not exist.');\r\n\r\n    await Category.deleteOne({ _id: req.body._id });\r\n    res.send(category)\r\n});\r\n\r\nmodule.exports = router;
+++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+++<+>UTF-8
+++===================================================================
+++diff --git a/routes/categories.js b/routes/categories.js
+++--- a/routes/categories.js	(revision fff3d1c31bcd2cc3269e4c74d452d8719054c85b)
++++++ b/routes/categories.js	(date 1615623352796)
+++@@ -40,4 +40,4 @@
+++     res.send(category)
+++ });
+++ 
+++-module.exports = router;
+++\ No newline at end of file
++++module.exports = router;
++Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml
++new file mode 100644
++--- /dev/null	(date 1615623384902)
+++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml	(date 1615623384902)
++@@ -0,0 +1,4 @@
+++<changelist name="Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]" date="1615623357685" recycled="true" deleted="true">
+++  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch" />
+++  <option name="DESCRIPTION" value="Uncommitted changes before Merge at 13/03/2021 10:15 [Default Changelist]" />
+++</changelist>
++\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43__Default_Changelist_.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43__Default_Changelist_.xml b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43__Default_Changelist_.xml
+new file mode 100644
+--- /dev/null	(date 1615632045378)
++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43__Default_Changelist_.xml	(date 1615632045378)
+@@ -0,0 +1,4 @@
++<changelist name="Uncommitted_changes_before_Merge_at_13_03_2021_11_43_[Default_Changelist]" date="1615628610161" recycled="true" deleted="true">
++  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43_[Default_Changelist]/shelved.patch" />
++  <option name="DESCRIPTION" value="Uncommitted changes before Merge at 13/03/2021 11:43 [Default Changelist]" />
++</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_12_40__Default_Changelist_.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_12_40__Default_Changelist_.xml b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_12_40__Default_Changelist_.xml
+new file mode 100644
+--- /dev/null	(date 1615632045371)
++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_12_40__Default_Changelist_.xml	(date 1615632045371)
+@@ -0,0 +1,4 @@
++<changelist name="Uncommitted_changes_before_Merge_at_13_03_2021_12_40_[Default_Changelist]" date="1615632005349" recycled="true" deleted="true">
++  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_12_40_[Default_Changelist]/shelved.patch" />
++  <option name="DESCRIPTION" value="Uncommitted changes before Merge at 13/03/2021 12:40 [Default Changelist]" />
++</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch
+new file mode 100644
+--- /dev/null	(date 1615632004878)
++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch	(date 1615632004878)
+@@ -0,0 +1,17 @@
++Index: routes/categories.js
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
++<+>const express = require('express');\r\nconst _ = require('lodash');\r\nconst router = express.Router();\r\n// Models\r\nconst { Category, validate } = require('../models/category');\r\nconst { User } = require('../models/user');\r\n// Middlewares\r\nconst auth = require('../middleware/auth');\r\nconst admin = require('../middleware/admin');\r\n\r\n// Get all categories\r\n// Everyone can get it.\r\nrouter.get('/', async (req, res) => {\r\n    const categories = await Category.find().sort('name');\r\n    res.send(categories);\r\n});\r\n\r\n// Create a new category\r\n// Every admin can do it.\r\nrouter.post('/', [ auth, admin ], async (req, res) => {\r\n    const { error } = validate(req.body);\r\n    if (error) return res.status(400).send(error.details[0].message);\r\n\r\n    category = new Category(_.pick(req.body, 'name'));\r\n\r\n    await category.save();\r\n    res.status(200).send(_.pick(category, ['_id', 'name']));\r\n})\r\n\r\n// Delete a category\r\n// Only an admin can delete a category\r\nrouter.delete('/', [auth, admin], async (req, res) => {\r\n    categoryId = _.pick(req.body, ['_id']);\r\n    if (!categoryId) return res.status(400).send('Got no category ID to delete.');\r\n\r\n    let category = await Category.findOne({ _id: categoryId });\r\n    if (!category) return res.status(400).send('Category does not exist.');\r\n\r\n    await Category.deleteOne({ _id: req.body._id });\r\n    res.send(category)\r\n});\r\n\r\nmodule.exports = router;
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/routes/categories.js b/routes/categories.js
++--- a/routes/categories.js	(revision fff3d1c31bcd2cc3269e4c74d452d8719054c85b)
+++++ b/routes/categories.js	(date 1615623352796)
++@@ -40,4 +40,4 @@
++     res.send(category)
++ });
++ 
++-module.exports = router;
++\ No newline at end of file
+++module.exports = router;
+Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_12_40_[Default_Changelist]/shelved.patch
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_12_40_[Default_Changelist]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_12_40_[Default_Changelist]/shelved.patch
+new file mode 100644
+--- /dev/null	(date 1615632003867)
++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_12_40_[Default_Changelist]/shelved.patch	(date 1615632003867)
+@@ -0,0 +1,171 @@
++Index: routes/categories.js
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
++<+>const express = require('express');\r\nconst _ = require('lodash');\r\nconst router = express.Router();\r\n// Models\r\nconst { Category, validate } = require('../models/category');\r\nconst { User } = require('../models/user');\r\n// Middlewares\r\nconst auth = require('../middleware/auth');\r\nconst admin = require('../middleware/admin');\r\n\r\n// Get all categories\r\n// Everyone can get it.\r\nrouter.get('/', async (req, res) => {\r\n    const categories = await Category.find().sort('name');\r\n    res.send(categories);\r\n});\r\n\r\n// Create a new category\r\n// Every admin can do it.\r\nrouter.post('/', [auth, admin], async (req, res) => {\r\n    const { error } = validate(req.body);\r\n    if (error) return res.status(400).send(error.details[0].message);\r\n\r\n    category = new Category(_.pick(req.body, 'name', 'imageUrl'));\r\n\r\n    await category.save();\r\n    res.status(200).send(_.pick(category, ['_id', 'name', 'imageUrl']));\r\n})\r\n\r\n// Update category\r\n// only admin\r\nrouter.put('/', [auth, admin], async (req, res) => {\r\n    categoryId = _.pick(req.body, ['_id']);\r\n    if (!categoryId) return res.status(400).send('Got no category ID to update.');\r\n\r\n    let category = await Category.findOne({ _id: categoryId });\r\n    if (!category) return res.status(400).send('Category does not exist.');\r\n\r\n    let { name } = _.pick(req.body, ['name', 'imageUrl']);\r\n\r\n    await Category.updateOne({ _id: categoryId }, { name: name }, { omitUndefined: true });\r\n\r\n    category = await Category.findOne({ _id: categoryId });\r\n\r\n    res.status(200).send(_.pick(category, ['_id', 'name', 'imageUrl']));\r\n});\r\n\r\n// Delete a category\r\n// Only an admin can delete a category\r\nrouter.delete('/:id', [auth, admin], async (req, res) => {\r\n    let category = await Category.findOne({ _id: req.params.id });\r\n    if (!category) return res.status(400).send('Category does not exist.');\r\n\r\n    await Category.deleteOne({ _id: req.params.id });\r\n    res.send(category)\r\n});\r\n\r\nmodule.exports = router;
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/routes/categories.js b/routes/categories.js
++--- a/routes/categories.js	(revision 1b2618c38c3d33b9e24838855df64bb035d80fda)
+++++ b/routes/categories.js	(date 1615628609732)
++@@ -55,4 +55,4 @@
++     res.send(category)
++ });
++ 
++-module.exports = router;
++\ No newline at end of file
+++module.exports = router;
++Index: routes/users.js
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
++<+>const express = require('express');\r\nconst _ = require('lodash');\r\nconst bcrypt = require('bcrypt');\r\nconst { User, validate } = require('../models/user');\r\nconst auth = require('../middleware/auth');\r\nconst admin = require('../middleware/admin');\r\nconst { Recipe } = require('../models/recipe');\r\nconst router = express.Router();\r\n\r\n// Get my details.\r\nrouter.get('/me', auth, async (req, res) => {\r\n    const user = await User.findById(req.user._id).select('-password');\r\n    res.send(user);\r\n});\r\n\r\n// Get all users:\r\n// Only Admin can get all the users.\r\nrouter.get('/', [], async (req, res) => {\r\n    const users = await User.find().sort('name');\r\n    res.send(users);\r\n});\r\n\r\n// Create a new user:\r\n// Anyone can create a user.\r\nrouter.post('/', async (req, res) => {\r\n    const { error } = validate(req.body);\r\n    if (error) return res.status(400).send(error.details[0].message);\r\n\r\n    let user = await User.findOne({ email: req.body.email });\r\n    if (user) return res.status(400).send('User already registered.');\r\n\r\n    user = new User(_.pick(req.body, ['name', 'email', 'password']));\r\n\r\n    // Hash the password\r\n    const salt = await bcrypt.genSalt(10);\r\n    user.password = await bcrypt.hash(user.password, salt);\r\n    await user.save();\r\n\r\n    const token = user.generateAuthToken();\r\n    res.header('x-auth-token', token)\r\n        .header('access-control-expose-headers', 'x-auth-token')\r\n        .send(_.pick(user, ['_id', 'name', 'email']));\r\n});\r\n\r\n// Update user\r\n// only owner\r\nrouter.put('/', auth, async (req, res) => {\r\n    userId = _.pick(req.body, ['_id']);\r\n    if (!userId) return res.status(400).send('Got no user ID to update.');\r\n\r\n    let user = await User.findOne({ _id: userId });\r\n    if (!user) return res.status(400).send('User does not exist.');\r\n\r\n    let { name, password } = _.pick(req.body, ['name', 'password']);\r\n    const salt = await bcrypt.genSalt(10);\r\n    const finalPass = await bcrypt.hash(password, salt);\r\n\r\n    await User.updateOne({ _id: userId }, { \r\n        name: name,\r\n        password: finalPass\r\n    }, { omitUndefined: true });\r\n\r\n    user = await User.findOne({ _id: userId });\r\n\r\n    res.status(200).send(_.pick(user, ['_id', 'name', 'email']));\r\n});\r\n\r\n// Delete a category\r\n// Only an admin can delete a user\r\nrouter.delete('/:id', [auth, admin], async (req, res) => {\r\n    let user = await User.findOne({ _id: req.params.id });\r\n    if (!user) return res.status(400).send('User does not exist.');\r\n\r\n    await User.deleteOne({ _id: req.params.id });\r\n    res.send(user)\r\n});\r\n\r\n// Special Query\r\nrouter.get('/byFilter', [ auth, admin], async (req, res) => {\r\n    let { name, recipeNumber, isAdmin } = _.pick(req.body, ['name', 'recipeNumber', 'isAdmin']);\r\n\r\n    let users = await User.find({ name: { $regex: name }, isAdmin: isAdmin });\r\n    let finalUsers = []\r\n    \r\n    await Promise.all(users.map(async (element) => {\r\n        let recipes = await Recipe.find({ author: element._id });\r\n        if (recipes && (recipes.length > recipeNumber)) finalUsers.push(element);\r\n    }));\r\n    \r\n    res.send(finalUsers);\r\n});\r\n\r\nmodule.exports = router;\r\n
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/routes/users.js b/routes/users.js
++--- a/routes/users.js	(revision 1b2618c38c3d33b9e24838855df64bb035d80fda)
+++++ b/routes/users.js	(date 1615631535386)
++@@ -76,10 +76,14 @@
++ });
++ 
++ // Special Query
++-router.get('/byFilter', [ auth, admin], async (req, res) => {
+++router.post('/byFilter', [], async (req, res) => {
++     let { name, recipeNumber, isAdmin } = _.pick(req.body, ['name', 'recipeNumber', 'isAdmin']);
++-
++-    let users = await User.find({ name: { $regex: name }, isAdmin: isAdmin });
+++    let users;
+++    if(name !== "") {
+++        users = await User.find({name: {$regex: name}, isAdmin: isAdmin});
+++    } else {
+++        users = await User.find({isAdmin: isAdmin});
+++    }
++     let finalUsers = []
++     
++     await Promise.all(users.map(async (element) => {
++Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43__Default_Changelist_.xml
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43__Default_Changelist_.xml b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43__Default_Changelist_.xml
++new file mode 100644
++--- /dev/null	(date 1615628619823)
+++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43__Default_Changelist_.xml	(date 1615628619823)
++@@ -0,0 +1,4 @@
+++<changelist name="Uncommitted_changes_before_Merge_at_13_03_2021_11_43_[Default_Changelist]" date="1615628610161" recycled="true" deleted="true">
+++  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43_[Default_Changelist]/shelved.patch" />
+++  <option name="DESCRIPTION" value="Uncommitted changes before Merge at 13/03/2021 11:43 [Default Changelist]" />
+++</changelist>
++\ No newline at end of file
++Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43_[Default_Changelist]/shelved.patch
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43_[Default_Changelist]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43_[Default_Changelist]/shelved.patch
++new file mode 100644
++--- /dev/null	(date 1615628608600)
+++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_11_43_[Default_Changelist]/shelved.patch	(date 1615628608600)
++@@ -0,0 +1,59 @@
+++Index: routes/categories.js
+++IDEA additional info:
+++Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+++<+>const express = require('express');\r\nconst _ = require('lodash');\r\nconst router = express.Router();\r\n// Models\r\nconst { Category, validate } = require('../models/category');\r\nconst { User } = require('../models/user');\r\n// Middlewares\r\nconst auth = require('../middleware/auth');\r\nconst admin = require('../middleware/admin');\r\n\r\n// Get all categories\r\n// Everyone can get it.\r\nrouter.get('/', async (req, res) => {\r\n    const categories = await Category.find().sort('name');\r\n    res.send(categories);\r\n});\r\n\r\n// Create a new category\r\n// Every admin can do it.\r\nrouter.post('/', [ auth, admin ], async (req, res) => {\r\n    const { error } = validate(req.body);\r\n    if (error) return res.status(400).send(error.details[0].message);\r\n\r\n    category = new Category(_.pick(req.body, 'name'));\r\n\r\n    await category.save();\r\n    res.status(200).send(_.pick(category, ['_id', 'name']));\r\n});\r\n\r\n// Update category\r\n// only admin\r\nrouter.put('/', [ auth, admin ], async (req, res) => {\r\n    categoryId = _.pick(req.body, ['_id']);\r\n    if (!categoryId) return res.status(400).send('Got no category ID to update.');\r\n\r\n    let category = await Category.findOne({ _id: categoryId });\r\n    if (!category) return res.status(400).send('Category does not exist.');\r\n\r\n    let { name } = _.pick(req.body, ['name']);\r\n\r\n    await Category.updateOne({ _id: categoryId }, { name: name }, { omitUndefined: true });\r\n\r\n    category = await Category.findOne({ _id: categoryId });\r\n\r\n    res.status(200).send(_.pick(category, ['_id', 'name']));\r\n});\r\n\r\n// Delete a category\r\n// Only an admin can delete a category\r\nrouter.delete('/', [auth, admin], async (req, res) => {\r\n    categoryId = _.pick(req.body, ['_id']);\r\n    if (!categoryId) return res.status(400).send('Got no category ID to delete.');\r\n\r\n    let category = await Category.findOne({ _id: categoryId });\r\n    if (!category) return res.status(400).send('Category does not exist.');\r\n\r\n    await Category.deleteOne({ _id: req.body._id });\r\n    res.send(category)\r\n});\r\n\r\nmodule.exports = router;
+++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+++<+>UTF-8
+++===================================================================
+++diff --git a/routes/categories.js b/routes/categories.js
+++--- a/routes/categories.js	(revision 6767489b3749cb208a695a190c67c8e240097fca)
++++++ b/routes/categories.js	(date 1615623357665)
+++@@ -58,4 +58,4 @@
+++     res.send(category)
+++ });
+++ 
+++-module.exports = router;
+++\ No newline at end of file
++++module.exports = router;
+++Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch
+++IDEA additional info:
+++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+++<+>UTF-8
+++===================================================================
+++diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch
+++new file mode 100644
+++--- /dev/null	(date 1615623356648)
++++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch	(date 1615623356648)
+++@@ -0,0 +1,17 @@
++++Index: routes/categories.js
++++IDEA additional info:
++++Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
++++<+>const express = require('express');\r\nconst _ = require('lodash');\r\nconst router = express.Router();\r\n// Models\r\nconst { Category, validate } = require('../models/category');\r\nconst { User } = require('../models/user');\r\n// Middlewares\r\nconst auth = require('../middleware/auth');\r\nconst admin = require('../middleware/admin');\r\n\r\n// Get all categories\r\n// Everyone can get it.\r\nrouter.get('/', async (req, res) => {\r\n    const categories = await Category.find().sort('name');\r\n    res.send(categories);\r\n});\r\n\r\n// Create a new category\r\n// Every admin can do it.\r\nrouter.post('/', [ auth, admin ], async (req, res) => {\r\n    const { error } = validate(req.body);\r\n    if (error) return res.status(400).send(error.details[0].message);\r\n\r\n    category = new Category(_.pick(req.body, 'name'));\r\n\r\n    await category.save();\r\n    res.status(200).send(_.pick(category, ['_id', 'name']));\r\n})\r\n\r\n// Delete a category\r\n// Only an admin can delete a category\r\nrouter.delete('/', [auth, admin], async (req, res) => {\r\n    categoryId = _.pick(req.body, ['_id']);\r\n    if (!categoryId) return res.status(400).send('Got no category ID to delete.');\r\n\r\n    let category = await Category.findOne({ _id: categoryId });\r\n    if (!category) return res.status(400).send('Category does not exist.');\r\n\r\n    await Category.deleteOne({ _id: req.body._id });\r\n    res.send(category)\r\n});\r\n\r\nmodule.exports = router;
++++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++++<+>UTF-8
++++===================================================================
++++diff --git a/routes/categories.js b/routes/categories.js
++++--- a/routes/categories.js	(revision fff3d1c31bcd2cc3269e4c74d452d8719054c85b)
+++++++ b/routes/categories.js	(date 1615623352796)
++++@@ -40,4 +40,4 @@
++++     res.send(category)
++++ });
++++ 
++++-module.exports = router;
++++\ No newline at end of file
+++++module.exports = router;
+++Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml
+++IDEA additional info:
+++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+++<+>UTF-8
+++===================================================================
+++diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml
+++new file mode 100644
+++--- /dev/null	(date 1615623384902)
++++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml	(date 1615623384902)
+++@@ -0,0 +1,4 @@
++++<changelist name="Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]" date="1615623357685" recycled="true" deleted="true">
++++  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch" />
++++  <option name="DESCRIPTION" value="Uncommitted changes before Merge at 13/03/2021 10:15 [Default Changelist]" />
++++</changelist>
+++\ No newline at end of file
++Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml
++new file mode 100644
++--- /dev/null	(date 1615628619833)
+++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml	(date 1615628619833)
++@@ -0,0 +1,4 @@
+++<changelist name="Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]" date="1615623357685" recycled="true" deleted="true">
+++  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch" />
+++  <option name="DESCRIPTION" value="Uncommitted changes before Merge at 13/03/2021 10:15 [Default Changelist]" />
+++</changelist>
++\ No newline at end of file
++Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch
++new file mode 100644
++--- /dev/null	(date 1615628609740)
+++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch	(date 1615628609740)
++@@ -0,0 +1,17 @@
+++Index: routes/categories.js
+++IDEA additional info:
+++Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+++<+>const express = require('express');\r\nconst _ = require('lodash');\r\nconst router = express.Router();\r\n// Models\r\nconst { Category, validate } = require('../models/category');\r\nconst { User } = require('../models/user');\r\n// Middlewares\r\nconst auth = require('../middleware/auth');\r\nconst admin = require('../middleware/admin');\r\n\r\n// Get all categories\r\n// Everyone can get it.\r\nrouter.get('/', async (req, res) => {\r\n    const categories = await Category.find().sort('name');\r\n    res.send(categories);\r\n});\r\n\r\n// Create a new category\r\n// Every admin can do it.\r\nrouter.post('/', [ auth, admin ], async (req, res) => {\r\n    const { error } = validate(req.body);\r\n    if (error) return res.status(400).send(error.details[0].message);\r\n\r\n    category = new Category(_.pick(req.body, 'name'));\r\n\r\n    await category.save();\r\n    res.status(200).send(_.pick(category, ['_id', 'name']));\r\n})\r\n\r\n// Delete a category\r\n// Only an admin can delete a category\r\nrouter.delete('/', [auth, admin], async (req, res) => {\r\n    categoryId = _.pick(req.body, ['_id']);\r\n    if (!categoryId) return res.status(400).send('Got no category ID to delete.');\r\n\r\n    let category = await Category.findOne({ _id: categoryId });\r\n    if (!category) return res.status(400).send('Category does not exist.');\r\n\r\n    await Category.deleteOne({ _id: req.body._id });\r\n    res.send(category)\r\n});\r\n\r\nmodule.exports = router;
+++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+++<+>UTF-8
+++===================================================================
+++diff --git a/routes/categories.js b/routes/categories.js
+++--- a/routes/categories.js	(revision fff3d1c31bcd2cc3269e4c74d452d8719054c85b)
++++++ b/routes/categories.js	(date 1615623352796)
+++@@ -40,4 +40,4 @@
+++     res.send(category)
+++ });
+++ 
+++-module.exports = router;
+++\ No newline at end of file
++++module.exports = router;

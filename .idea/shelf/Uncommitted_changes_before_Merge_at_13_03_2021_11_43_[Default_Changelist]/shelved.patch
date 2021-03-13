@@ -1,0 +1,59 @@
+Index: routes/categories.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>const express = require('express');\r\nconst _ = require('lodash');\r\nconst router = express.Router();\r\n// Models\r\nconst { Category, validate } = require('../models/category');\r\nconst { User } = require('../models/user');\r\n// Middlewares\r\nconst auth = require('../middleware/auth');\r\nconst admin = require('../middleware/admin');\r\n\r\n// Get all categories\r\n// Everyone can get it.\r\nrouter.get('/', async (req, res) => {\r\n    const categories = await Category.find().sort('name');\r\n    res.send(categories);\r\n});\r\n\r\n// Create a new category\r\n// Every admin can do it.\r\nrouter.post('/', [ auth, admin ], async (req, res) => {\r\n    const { error } = validate(req.body);\r\n    if (error) return res.status(400).send(error.details[0].message);\r\n\r\n    category = new Category(_.pick(req.body, 'name'));\r\n\r\n    await category.save();\r\n    res.status(200).send(_.pick(category, ['_id', 'name']));\r\n});\r\n\r\n// Update category\r\n// only admin\r\nrouter.put('/', [ auth, admin ], async (req, res) => {\r\n    categoryId = _.pick(req.body, ['_id']);\r\n    if (!categoryId) return res.status(400).send('Got no category ID to update.');\r\n\r\n    let category = await Category.findOne({ _id: categoryId });\r\n    if (!category) return res.status(400).send('Category does not exist.');\r\n\r\n    let { name } = _.pick(req.body, ['name']);\r\n\r\n    await Category.updateOne({ _id: categoryId }, { name: name }, { omitUndefined: true });\r\n\r\n    category = await Category.findOne({ _id: categoryId });\r\n\r\n    res.status(200).send(_.pick(category, ['_id', 'name']));\r\n});\r\n\r\n// Delete a category\r\n// Only an admin can delete a category\r\nrouter.delete('/', [auth, admin], async (req, res) => {\r\n    categoryId = _.pick(req.body, ['_id']);\r\n    if (!categoryId) return res.status(400).send('Got no category ID to delete.');\r\n\r\n    let category = await Category.findOne({ _id: categoryId });\r\n    if (!category) return res.status(400).send('Category does not exist.');\r\n\r\n    await Category.deleteOne({ _id: req.body._id });\r\n    res.send(category)\r\n});\r\n\r\nmodule.exports = router;
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/routes/categories.js b/routes/categories.js
+--- a/routes/categories.js	(revision 6767489b3749cb208a695a190c67c8e240097fca)
++++ b/routes/categories.js	(date 1615623357665)
+@@ -58,4 +58,4 @@
+     res.send(category)
+ });
+ 
+-module.exports = router;
+\ No newline at end of file
++module.exports = router;
+Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch
+new file mode 100644
+--- /dev/null	(date 1615623356648)
++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch	(date 1615623356648)
+@@ -0,0 +1,17 @@
++Index: routes/categories.js
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
++<+>const express = require('express');\r\nconst _ = require('lodash');\r\nconst router = express.Router();\r\n// Models\r\nconst { Category, validate } = require('../models/category');\r\nconst { User } = require('../models/user');\r\n// Middlewares\r\nconst auth = require('../middleware/auth');\r\nconst admin = require('../middleware/admin');\r\n\r\n// Get all categories\r\n// Everyone can get it.\r\nrouter.get('/', async (req, res) => {\r\n    const categories = await Category.find().sort('name');\r\n    res.send(categories);\r\n});\r\n\r\n// Create a new category\r\n// Every admin can do it.\r\nrouter.post('/', [ auth, admin ], async (req, res) => {\r\n    const { error } = validate(req.body);\r\n    if (error) return res.status(400).send(error.details[0].message);\r\n\r\n    category = new Category(_.pick(req.body, 'name'));\r\n\r\n    await category.save();\r\n    res.status(200).send(_.pick(category, ['_id', 'name']));\r\n})\r\n\r\n// Delete a category\r\n// Only an admin can delete a category\r\nrouter.delete('/', [auth, admin], async (req, res) => {\r\n    categoryId = _.pick(req.body, ['_id']);\r\n    if (!categoryId) return res.status(400).send('Got no category ID to delete.');\r\n\r\n    let category = await Category.findOne({ _id: categoryId });\r\n    if (!category) return res.status(400).send('Category does not exist.');\r\n\r\n    await Category.deleteOne({ _id: req.body._id });\r\n    res.send(category)\r\n});\r\n\r\nmodule.exports = router;
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/routes/categories.js b/routes/categories.js
++--- a/routes/categories.js	(revision fff3d1c31bcd2cc3269e4c74d452d8719054c85b)
+++++ b/routes/categories.js	(date 1615623352796)
++@@ -40,4 +40,4 @@
++     res.send(category)
++ });
++ 
++-module.exports = router;
++\ No newline at end of file
+++module.exports = router;
+Index: .idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml
+new file mode 100644
+--- /dev/null	(date 1615623384902)
++++ b/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15__Default_Changelist_.xml	(date 1615623384902)
+@@ -0,0 +1,4 @@
++<changelist name="Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]" date="1615623357685" recycled="true" deleted="true">
++  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_13_03_2021_10_15_[Default_Changelist]/shelved.patch" />
++  <option name="DESCRIPTION" value="Uncommitted changes before Merge at 13/03/2021 10:15 [Default Changelist]" />
++</changelist>
+\ No newline at end of file
